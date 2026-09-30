@@ -2,9 +2,12 @@
 import type { HTMLAttributes } from 'astro/types';
 
 type Common = {
-  variant?: 'primary';
+  /** `outline-light` is for dark (navy) surfaces. */
+  variant?: 'primary' | 'outline-light';
   size?: 'default' | 'large';
   block?: boolean;
+  /** Adds a decorative trailing arrow that nudges forward on hover and focus. */
+  arrow?: boolean;
   class?: string;
 };
 
@@ -13,8 +16,14 @@ type ButtonProps = Common & Omit<HTMLAttributes<'button'>, 'class'> & { href?: n
 
 type Props = LinkProps | ButtonProps;
 
-const { variant = 'primary', size = 'default', block = false, class: className, ...rest } =
-  Astro.props;
+const {
+  variant = 'primary',
+  size = 'default',
+  block = false,
+  arrow = false,
+  class: className,
+  ...rest
+} = Astro.props;
 
 const classes = ['button', `button--${variant}`, `button--${size}`, block && 'button--block', className];
 ---
@@ -23,10 +32,12 @@ const classes = ['button', `button--${variant}`, `button--${size}`, block && 'bu
   'href' in rest && rest.href ? (
     <a class:list={classes} {...(rest as HTMLAttributes<'a'>)}>
       <slot />
+      {arrow && <span class="button__arrow" aria-hidden="true">→</span>}
     </a>
   ) : (
     <button type="button" class:list={classes} {...(rest as HTMLAttributes<'button'>)}>
       <slot />
+      {arrow && <span class="button__arrow" aria-hidden="true">→</span>}
     </button>
   )
 }
@@ -75,5 +86,28 @@ const classes = ['button', `button--${variant}`, `button--${size}`, block && 'bu
 
   .button--primary:active {
     background-color: var(--color-yellow-hover);
+  }
+
+  /* Outline for navy surfaces: white text and hairline, filling faintly on hover. */
+  .button--outline-light {
+    background-color: transparent;
+    color: var(--color-white);
+    box-shadow: inset 0 0 0 var(--border-thin) var(--color-outline-on-dark);
+    --focus-color: var(--color-yellow);
+  }
+
+  .button--outline-light:hover {
+    background-color: var(--color-fill-on-dark);
+    box-shadow: inset 0 0 0 var(--border-thin) var(--color-white);
+  }
+
+  .button__arrow {
+    display: inline-block;
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .button:hover .button__arrow,
+  .button:focus-visible .button__arrow {
+    transform: translateX(0.25rem);
   }
 </style>

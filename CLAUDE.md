@@ -41,4 +41,5 @@ Presentation details in the source, such as the "01 —" numbering, the → and 
 - Visual direction: premium, editorial, warm and contemporary. Keep chrome (header, footer) restrained so photography and page compositions carry the strongest moments. Minimal corner rounding.
 - Source assets: originals in `brand-source/` (`logo/`, `photography/`), kept unchanged. Web-ready derivatives go in `src/assets/`.
 - Brand files: originals in `brand-source/logo/` (unchanged). Web-ready derivatives in `src/assets/brand/`, rendered through `astro:assets`. The header uses the black lockup; the colour lockup is `#2024D4`.
+- The homepage hero's photograph and cutout share one stage geometry (`--stage-ar`, `--front-*` in `src/components/HomeHero.astro`). Regenerate both with `tools/hero-matte/` if the crop changes, and never move one without the other.
 - Older instructions or skills may refer to a previous Next.js/Tailwind project or to `/home/claude/site`. Those paths are outdated. Do not import from them.

@@ -47,10 +47,12 @@ brand-source/logo/  original logo files as supplied (do not edit)
 public/             favicon and app icons
 src/
   assets/brand/ web-ready logo derivatives
-  components/   Header, Logo, NavLink, Button, Container, PageIntro
+  assets/hero/  hero photograph stage crop and aligned cutout
+  components/   Header, Logo, NavLink, Button, Container, PageIntro, HomeHero
   data/         navigation.ts (nav items, CTA, breakpoint), site.ts (page titles/descriptions)
   layouts/      BaseLayout.astro
   pages/        route shells and 404
   styles/       tokens.css (design tokens), global.css
-docs/screenshots/  verification screenshots
+docs/screenshots/  verification screenshots and the hero entrance recording
+tools/hero-matte/  scripts that rebuild the hero cutout
 ```

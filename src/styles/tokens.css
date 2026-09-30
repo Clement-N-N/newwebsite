@@ -17,6 +17,10 @@
   --color-link: var(--color-navy);
   --color-rule: rgb(16 19 112 / 0.14); /* navy at 14% */
   --color-rule-on-dark: rgb(255 255 255 / 0.18);
+  --color-text-on-dark: var(--color-white);
+  --color-muted-on-dark: rgb(255 255 255 / 0.8); /* 10.2:1 on navy */
+  --color-outline-on-dark: rgb(255 255 255 / 0.55);
+  --color-fill-on-dark: rgb(255 255 255 / 0.08);
   --color-yellow-hover: color-mix(in srgb, var(--color-yellow) 86%, var(--color-navy));
 
   /* Typography */
@@ -76,6 +80,8 @@
   --duration-slow: 360ms;
   --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-curtain: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-settle: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @media (min-width: 75rem) {

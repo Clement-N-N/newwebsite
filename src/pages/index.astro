@@ -1,9 +1,9 @@
 ---
-import PageIntro from '../components/PageIntro.astro';
+import HomeHero from '../components/HomeHero.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { pages, site } from '../data/site';
+import { pages } from '../data/site';
 ---
 
 <BaseLayout {...pages.home}>
-  <PageIntro title={site.name} lede={site.positioning} />
+  <HomeHero />
 </BaseLayout>
