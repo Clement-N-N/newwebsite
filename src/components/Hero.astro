@@ -1,0 +1,335 @@
+---
+/*
+ * Homepage hero, "Illuminated Humanity".
+ *
+ * A deep navy canvas with a soft light that follows the cursor and reveals,
+ * faintly, a genuine Goodwill Fellowship photograph held in the dark behind
+ * the text. On touch devices, and under prefers-reduced-motion, the light
+ * rests in one place and nothing tracks the pointer.
+ *
+ * Layers (all decorative, hidden from assistive technology):
+ *   1. Navy base.
+ *   2. The photograph, desaturated into the navy and masked by the light.
+ *   3. A shade that keeps the text column dark enough for contrast.
+ *   4. A warm, soft glow at the light's position.
+ *
+ * Photograph: GWF Photos / IDT-46.jpg (stage crop in src/assets/hero/).
+ */
+import { Image } from 'astro:assets';
+import Button from './Button.astro';
+import photo from '../assets/hero/idt-46-stage.jpg';
+
+// Verbatim from the Website Content document (Home Page > Hero Section).
+const copy = {
+  eyebrow: 'NONPROFIT YOUTH WORKFORCE DEVELOPMENT IN CAMEROON',
+  headline: 'Building the bridge from education to meaningful work.',
+  lede: 'Impact Axis is a Cameroon-based nonprofit helping young people build the practical skills, experience and networks they need to access meaningful and dignified work. We do this through experiential learning, mentorship and applied projects.',
+  cta: { label: 'Explore our work', href: '/our-work' },
+};
+---
+
+<section class="hero" aria-labelledby="hero-title" data-illuminate>
+  <div class="hero__backdrop" aria-hidden="true">
+    <Image
+      src={photo}
+      alt=""
+      widths={[960, 1440, 1920, 2560]}
+      sizes="100vw"
+      loading="eager"
+      decoding="async"
+      class="hero__photo"
+    />
+    <div class="hero__shade"></div>
+    <div class="hero__glow"></div>
+  </div>
+
+  <div class="hero__inner">
+    <p class="hero__eyebrow">{copy.eyebrow}</p>
+    <h1 id="hero-title" class="hero__title">{copy.headline}</h1>
+    <p class="hero__lede">{copy.lede}</p>
+    <div class="hero__actions">
+      <Button href={copy.cta.href} size="large" arrow>{copy.cta.label}</Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Registered so the light can glide between positions instead of jumping. */
+  @property --light-x {
+    syntax: '<percentage>';
+    inherits: true;
+    initial-value: 74%;
+  }
+
+  @property --light-y {
+    syntax: '<percentage>';
+    inherits: true;
+    initial-value: 34%;
+  }
+
+  .hero {
+    --light-x: 74%;
+    --light-y: 34%;
+    --light-size: clamp(22rem, 42vw, 44rem);
+    --light-lag: 700ms;
+
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    display: flex;
+    align-items: center;
+    min-height: max(80svh, calc(100svh - var(--header-height)));
+    background: var(--color-navy);
+    color: var(--color-text-on-dark);
+    --focus-color: var(--color-yellow);
+    transition:
+      --light-x var(--light-lag) var(--ease-settle),
+      --light-y var(--light-lag) var(--ease-settle);
+  }
+
+  /* ---------- Illumination layers ---------- */
+
+  .hero__backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    /* Its own blending group: the photograph blends with this navy. */
+    background: var(--color-navy);
+    pointer-events: none;
+  }
+
+  .hero__photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+    object-position: 62% 30%;
+    /* Held deep in the navy: the photograph lends texture, never competes. */
+    filter: grayscale(1) brightness(0.62) contrast(1.08);
+    mix-blend-mode: luminosity;
+    opacity: 0.62;
+    -webkit-mask-image: radial-gradient(
+      circle var(--light-size) at var(--light-x) var(--light-y),
+      #000 0%,
+      rgb(0 0 0 / 0.55) 38%,
+      rgb(0 0 0 / 0.1) 100%
+    );
+    mask-image: radial-gradient(
+      circle var(--light-size) at var(--light-x) var(--light-y),
+      #000 0%,
+      rgb(0 0 0 / 0.55) 38%,
+      rgb(0 0 0 / 0.1) 100%
+    );
+  }
+
+  /* Keeps the typographic column in deep navy, whatever the light reveals. */
+  .hero__shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      var(--color-navy) 0%,
+      rgb(16 19 112 / 0.9) 34%,
+      rgb(16 19 112 / 0.45) 62%,
+      rgb(16 19 112 / 0.15) 100%
+    );
+  }
+
+  .hero__glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle var(--light-size) at var(--light-x) var(--light-y),
+      rgb(254 208 1 / 0.1) 0%,
+      rgb(255 255 255 / 0.05) 30%,
+      transparent 70%
+    );
+    mix-blend-mode: screen;
+  }
+
+  /* ---------- Content: a strong left typographic grid ---------- */
+
+  .hero__inner {
+    width: 100%;
+    max-width: calc(var(--width-content) + 2 * var(--gutter));
+    margin-inline: auto;
+    padding: var(--space-2xl) var(--gutter);
+  }
+
+  .hero__eyebrow {
+    max-width: 30ch;
+    color: var(--color-muted-on-dark);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-medium);
+    letter-spacing: 0.14em;
+    line-height: 1.5;
+  }
+
+  .hero__title {
+    max-width: 17ch;
+    margin-top: var(--space-m);
+    color: var(--color-white);
+    /* Massive, but capped by viewport height so the CTA stays in the first view. */
+    font-size: min(clamp(2.75rem, 0.9rem + 7vw, 7.25rem), 12.5svh);
+    font-weight: var(--weight-semibold);
+    line-height: 0.96;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+
+  .hero__lede {
+    max-width: 38rem;
+    margin-top: var(--space-l);
+    color: var(--color-muted-on-dark);
+    font-size: var(--text-lg);
+    line-height: 1.6;
+  }
+
+  .hero__actions {
+    margin-top: var(--space-xl);
+  }
+
+  @media (min-width: 64rem) {
+    .hero__inner {
+      padding-block: var(--space-2xl);
+    }
+
+    /* Set the photograph right of the text column so faces sit clear of the headline. */
+    .hero__photo {
+      inset: 0 -18% 0 auto;
+      width: auto;
+      height: 100%;
+      aspect-ratio: 4600 / 3428;
+    }
+
+    .hero__eyebrow {
+      max-width: none;
+    }
+  }
+
+  /* Narrow screens: the light rests high on the right, above the headline. */
+  @media (max-width: 40rem) {
+    .hero {
+      --light-x: 82%;
+      --light-y: 14%;
+      --light-size: 24rem;
+    }
+
+    .hero__photo {
+      object-position: 58% 20%;
+      opacity: 0.5;
+    }
+
+    .hero__shade {
+      background: linear-gradient(
+        180deg,
+        rgb(16 19 112 / 0.35) 0%,
+        rgb(16 19 112 / 0.85) 40%,
+        var(--color-navy) 70%
+      );
+    }
+  }
+
+  /* ---------- Entrance: a slow, elegant fade and rise ---------- */
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(html.js) .hero__eyebrow,
+    :global(html.js) .hero__title,
+    :global(html.js) .hero__lede,
+    :global(html.js) .hero__actions {
+      animation: hero-enter 1100ms var(--ease-settle) both;
+    }
+
+    :global(html.js) .hero__title {
+      animation-delay: 120ms;
+    }
+
+    :global(html.js) .hero__lede {
+      animation-delay: 300ms;
+    }
+
+    :global(html.js) .hero__actions {
+      animation-delay: 440ms;
+    }
+
+    :global(html.js) .hero__backdrop {
+      animation: hero-dawn 1600ms var(--ease-out) both;
+    }
+  }
+
+  /* Reduced motion: a still, composed light; nothing glides or follows. */
+  @media (prefers-reduced-motion: reduce) {
+    .hero {
+      transition: none;
+    }
+  }
+
+  @keyframes hero-enter {
+    from {
+      opacity: 0;
+      transform: translateY(1.5rem);
+    }
+  }
+
+  @keyframes hero-dawn {
+    from {
+      opacity: 0;
+    }
+  }
+</style>
+
+<script>
+  // Cursor illumination: only for a fine hovering pointer with motion allowed.
+  const query = window.matchMedia(
+    '(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)',
+  );
+
+  function illuminate(hero: HTMLElement): void {
+    let frame = 0;
+    let pending: PointerEvent | null = null;
+
+    const apply = (): void => {
+      frame = 0;
+      if (!pending) return;
+      const rect = hero.getBoundingClientRect();
+      const x = ((pending.clientX - rect.left) / rect.width) * 100;
+      const y = ((pending.clientY - rect.top) / rect.height) * 100;
+      hero.style.setProperty('--light-x', `${Math.min(100, Math.max(0, x)).toFixed(2)}%`);
+      hero.style.setProperty('--light-y', `${Math.min(100, Math.max(0, y)).toFixed(2)}%`);
+      pending = null;
+    };
+
+    const onMove = (event: PointerEvent): void => {
+      if (event.pointerType !== 'mouse' && event.pointerType !== 'pen') return;
+      pending = event;
+      if (!frame) frame = requestAnimationFrame(apply);
+    };
+
+    // Leaving the hero lets the light drift back to its resting place.
+    const rest = (): void => {
+      if (frame) cancelAnimationFrame(frame);
+      frame = 0;
+      pending = null;
+      hero.style.removeProperty('--light-x');
+      hero.style.removeProperty('--light-y');
+    };
+
+    const sync = (): void => {
+      if (query.matches) {
+        hero.addEventListener('pointermove', onMove, { passive: true });
+        hero.addEventListener('pointerleave', rest);
+      } else {
+        hero.removeEventListener('pointermove', onMove);
+        hero.removeEventListener('pointerleave', rest);
+        rest();
+      }
+    };
+
+    sync();
+    query.addEventListener('change', sync);
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-illuminate]').forEach(illuminate);
+</script>

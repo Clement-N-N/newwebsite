@@ -48,7 +48,7 @@ public/             favicon and app icons
 src/
   assets/brand/ web-ready logo derivatives
   assets/hero/  hero photograph stage crop and aligned cutout
-  components/   Header, Logo, NavLink, Button, Container, PageIntro, HomeHero
+  components/   Header, Logo, NavLink, Button, Container, PageIntro, Hero (homepage), HomeHero (earlier hero, unused)
   data/         navigation.ts (nav items, CTA, breakpoint), site.ts (page titles/descriptions)
   layouts/      BaseLayout.astro
   pages/        route shells and 404

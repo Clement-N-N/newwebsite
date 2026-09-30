@@ -64,6 +64,33 @@ Screenshots and a recording of the entrance are in `docs/screenshots/` (`hero-*`
 
 **Reference sites:** The Playground, LightEd and FEED Ghana could not be viewed; all three are blocked by the environment's network policy (curl and WebFetch). The hero follows the principles described in the brief, not observed layouts or interactions.
 
+### 3. Homepage hero: "Illuminated Humanity" (2026-09-30)
+
+This replaces the photographic hero from piece 2 on the homepage, following the new creative brief. The earlier `HomeHero.astro` and its assets are kept in the repository, unused. To restore it, change the import in `src/pages/index.astro`.
+
+- **Component:** `src/components/Hero.astro`. The copy is verbatim from the content reference (Home Page > Hero Section): the eyebrow, the headline, the supporting copy, and the primary CTA "Explore our work" (`/our-work`) in the yellow button style with a decorative arrow.
+- **Layout:** a deep navy canvas that is at least 80svh tall and fills the view below the header, with a strong left typographic grid. The h1 is white, Poppins 600, line-height 0.96 and tightly tracked, up to 116px. It is capped by viewport height (12.5svh) so the CTA stays in the first view on laptops. It fits 820 of 820px at 1440 × 900 and 752 of 752px at 1280 × 800.
+- **Illumination:** vanilla TypeScript, pointer-driven and throttled with requestAnimationFrame. It sets `--light-x` and `--light-y`, which are registered with `@property`, so the light glides with a 700ms lag.
+  - The light reveals a genuine Goodwill Fellowship photograph (GWF Photos / IDT-46.jpg stage crop). The photograph is held deep in the navy: greyscale, luminosity blend, and masked by the light.
+  - A left-hand shade keeps the text column dark, and a faint warm glow marks the light itself.
+  - Leaving the hero lets the light drift back to its resting place.
+  - The whole backdrop is decorative: `alt=""` and `aria-hidden`.
+- **Touch, reduced motion and no JavaScript:** tracking only runs for `(hover: hover) and (pointer: fine)` with motion allowed. Otherwise the light rests in a fixed, composed position: high right on phones, and right of the text on larger screens.
+- **Entrance:** a slow fade and rise (1.1s, staggered) for the eyebrow, headline, supporting copy and CTA, and a gentle fade-in of the backdrop. There is none under reduced motion or without JavaScript.
+
+Verified in Chromium:
+- 1440, 1280, 1024, 768, 640, 390 and 320px: no horizontal overflow, CTA inside the hero, no console errors or failed requests.
+- The light follows the cursor and returns to rest when the pointer leaves; touch does not track.
+- Reduced motion: static light, 0 animations. No-JS: complete and static.
+- One h1, and the CTA is the first tab stop in `main`, with a yellow focus ring.
+- CLS 0.0094. `npm run check`: 0 errors, 0 warnings, 0 hints. Header regression suite passes.
+- **Worst-case contrast**, measured with the light centred on each text block and the brightest background pixel taken:
+  - Headline (white): at least 9.2:1.
+  - Eyebrow and supporting copy (80% white): at least 6.2:1.
+  - CTA (navy on yellow): 10.55:1.
+
+Screenshots: `docs/screenshots/illuminated-hero-*`.
+
 ## Missing content and assets
 
 - **Vector logo master.** Only raster files (PNG/WebP) were supplied. An SVG would be sharper at every size and lighter.
@@ -89,11 +116,13 @@ Both are kept out of git because the repository is public and they contain priva
 
 - The yellow CTA against the white header measures 1.48:1 as a shape. The button is identified by its text label (10.55:1), so it does not rely on its boundary, but avoid yellow-on-white for anything that must read as a shape alone.
 - The 1200px switch point is limited by the space between the nav and the CTA (120px at 1200px), not by the logo.
-- On phones the hero photograph sits partly below the fold, so most of its reveal plays before the visitor scrolls to it. The text reveal is immediate.
+- Illuminated hero: the photograph shows only as texture. At 1024–1279px the fellow's face sits partly behind the headline, so the light reveals her shoulder rather than her face. The previous hero's "Partner with us" secondary CTA is not in this hero, because the brief asked for the primary CTA only; the header still carries "Partner with us".
+- Illuminated hero: `@property` transitions need Firefox 128+ or Safari 16.4+. Older browsers move the light instantly instead of gliding.
+- (Earlier photographic hero, now unused) On phones the hero photograph sits partly below the fold, so most of its reveal plays before the visitor scrolls to it. The text reveal is immediate.
 - The hero's LCP element can be the cutout rather than the photograph, because the photograph starts fully clipped by the opening curtain. It measured about 0.95s locally.
 - Browser verification was automated in Chromium only. Safari/iOS and Firefox have not been checked by hand yet.
 - `/contact` is not in the primary navigation (per the navigation brief). It currently has no inbound link.
 
 ## Next piece
 
-**Homepage "Why We Exist" section** (content reference, Source page 4), once the hero has been reviewed. Do not start other sections.
+**Section 2: Impact & Statistics.** Do not start other sections.
