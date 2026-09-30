@@ -91,6 +91,11 @@ Verified in Chromium:
 
 Screenshots: `docs/screenshots/illuminated-hero-*`.
 
+**Owner-approved copy change (2026-09-30):** the hero's supporting copy was shortened from 38 to 23 words at the owner's request. It no longer repeats "Cameroon-based nonprofit" (already in the eyebrow) or "meaningful work" (already in the headline).
+- Original (content document): "Impact Axis is a Cameroon-based nonprofit helping young people build the practical skills, experience and networks they need to access meaningful and dignified work. We do this through experiential learning, mentorship and applied projects."
+- Now: "We help young people in Cameroon gain the skills, experience and networks for dignified work, through learning by doing, mentorship and real projects."
+- The homepage meta description still uses the document's original first sentence.
+
 ## Missing content and assets
 
 - **Vector logo master.** Only raster files (PNG/WebP) were supplied. An SVG would be sharper at every size and lighter.
