@@ -6,7 +6,8 @@ These rules apply to every piece of work in this repository.
 
 - **Work on the requested piece only.** Build the section or change you were asked for and stop. Do not build ahead (heroes, footers, forms, statistics, etc.) unless that piece has been requested.
 - **Preserve reviewed work.** Do not restyle, restructure or remove components that have already been built and reviewed unless the request explicitly asks for it. Extend the existing tokens and components instead of creating parallel ones.
-- **Use the supplied content and genuine assets.** Organisational copy comes from the supplied *Website Content* document. Logos, photography and other assets must be the genuine Impact Axis Foundation files. Never invent facts, figures, quotes, partners, programmes, logos or imagery.
+- **Use the supplied content and genuine assets.** Organisational copy comes from the supplied *Website Content* document; use its wording verbatim. Logos, photography and other assets must be the genuine Impact Axis files. Never invent facts, figures, quotes, partners, programmes, logos or imagery. Never redraw, recolour or trace the logo.
+- **Keep private source material out of git.** This repository is public. The Website Content PDF (and its extracted text) lives in the gitignored `docs/content/` folder because it contains private Google Drive links. Do not commit it, and do not paste those links into committed files.
 - **Record missing information.** When content or an asset is not available, use a clearly temporary treatment (never a fabricated one) and record the gap in `BUILD_PROGRESS.md` under *Missing content and assets*.
 - **Check desktop, mobile, keyboard access and reduced motion** for everything you build: at minimum 1440, 1280, 768, 640, 390 and 320px wide, keyboard-only operation with visible focus, and `prefers-reduced-motion: reduce`.
 - **Verify the running interface before reporting completion.** Run the site, inspect it in a browser (screenshots), and run `npm run check` and `npm run build`. Do not report a piece as done from reading the code alone.
@@ -22,4 +23,5 @@ These rules apply to every piece of work in this repository.
 - Navigation items and the partnership CTA are defined once in `src/data/navigation.ts`. Page titles and descriptions are defined in `src/data/site.ts` and passed to `BaseLayout`.
 - The desktop/mobile header switch is at `75rem` (1200px). The value appears in `src/data/navigation.ts`, `src/styles/tokens.css` and `src/components/Header.astro`. Change all three together.
 - Visual direction: premium, editorial, warm and contemporary. Keep chrome (header, footer) restrained so photography and page compositions carry the strongest moments. Minimal corner rounding.
+- Brand files: originals in `brand-source/logo/` (unchanged). Web-ready derivatives in `src/assets/brand/`, rendered through `astro:assets`. The header uses the black lockup; the colour lockup is `#2024D4`.
 - Older instructions or skills may refer to a previous Next.js/Tailwind project or to `/home/claude/site`. Those paths are outdated. Do not import from them.

@@ -257,17 +257,6 @@ const menuId = 'mobile-menu';
     }
   }
 
-  /* Smallest phones: tighten the bar so the wordmark and button keep clear space. */
-  @media (max-width: 22.5rem) {
-    .menu-toggle {
-      padding-inline: var(--space-2xs);
-      margin-inline-end: calc(var(--space-2xs) * -1);
-    }
-
-    .site-header :global(.logo) {
-      font-size: 0.875rem;
-    }
-  }
 
   @media (prefers-reduced-motion: reduce) {
     :global(html.js) .mobile-menu {

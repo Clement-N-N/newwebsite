@@ -1,28 +1,37 @@
 ---
 /*
- * TEMPORARY TEXT TREATMENT.
- * The official Impact Axis Foundation logo has not been supplied. Replace this
- * wordmark with the genuine asset (preferably SVG) once it is available.
- * Do not draw or approximate a logo here.
+ * Official Impact Axis logo (horizontal lockup).
+ * Source files live in brand-source/logo/. The files in src/assets/brand/ are
+ * the same artwork trimmed to its edges on a transparent background; the
+ * artwork itself is unchanged. Swap to SVG when a vector master is supplied.
  */
-import { site } from '../data/site';
+import { Image } from 'astro:assets';
+import lockupBlack from '../assets/brand/impact-axis-lockup-black.png';
+import lockupBlue from '../assets/brand/impact-axis-lockup-blue.png';
 
 interface Props {
-  /** Visual tone of the wordmark. */
-  tone?: 'navy' | 'white';
+  /**
+   * Black is the header default: it keeps the white header restrained beside
+   * the navy navigation. The blue (#2024D4) colour lockup is also supplied.
+   */
+  variant?: 'blue' | 'black';
 }
 
-const { tone = 'navy' } = Astro.props;
+const { variant = 'black' } = Astro.props;
+const src = variant === 'black' ? lockupBlack : lockupBlue;
 const isHome = Astro.url.pathname === '/';
 ---
 
-<a
-  href="/"
-  class:list={['logo', `logo--${tone}`]}
-  aria-current={isHome ? 'page' : undefined}
-  data-logo
->
-  {site.name}
+<a href="/" class="logo" aria-current={isHome ? 'page' : undefined} data-logo>
+  <Image
+    src={src}
+    alt="Impact Axis"
+    width={128}
+    densities={[1, 2, 3]}
+    loading="eager"
+    decoding="async"
+    class="logo__image"
+  />
 </a>
 
 <style>
@@ -30,19 +39,17 @@ const isHome = Astro.url.pathname === '/';
     display: inline-flex;
     align-items: center;
     min-height: 2.75rem;
-    font-size: clamp(0.9375rem, 0.85rem + 0.35vw, 1.125rem);
-    font-weight: var(--weight-semibold);
-    letter-spacing: var(--tracking-snug);
-    line-height: 1.1;
-    text-decoration: none;
-    white-space: nowrap;
+    border-radius: var(--radius-xs);
   }
 
-  .logo--navy {
-    color: var(--color-navy);
+  .logo__image {
+    width: auto;
+    height: 2.5rem; /* 40px tall, about 107px wide */
   }
 
-  .logo--white {
-    color: var(--color-white);
+  @media (min-width: 75rem) {
+    .logo__image {
+      height: 3rem; /* 48px tall, about 128px wide */
+    }
   }
 </style>

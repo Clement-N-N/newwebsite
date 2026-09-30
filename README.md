@@ -43,7 +43,10 @@ npm run preview   # serve dist/ locally at http://localhost:4321
 ## Structure
 
 ```
+brand-source/logo/  original logo files as supplied (do not edit)
+public/             favicon and app icons
 src/
+  assets/brand/ web-ready logo derivatives
   components/   Header, Logo, NavLink, Button, Container, PageIntro
   data/         navigation.ts (nav items, CTA, breakpoint), site.ts (page titles/descriptions)
   layouts/      BaseLayout.astro
