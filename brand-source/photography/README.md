@@ -29,3 +29,13 @@ Homepage hero shortlist, chosen from the Drive folders **GWF Photos** (Goodwill 
   2. **Local tools (Python):** MediaPipe selfie segmentation (the model bundled in the pip package) gave the second coarse guide. Where both guides agree, a trimap was built; OpenCV GrabCut resolved the rest at half resolution, and a guided filter refined the edge at full resolution. The edge was then choked slightly to remove a light fringe from the wall behind, and the lower edge of the band was feathered.
 - No pixels were painted, generated or altered. The cutout's colour pixels are the original's.
 - Scripts: `tools/hero-matte/`. The geometry is recorded in `HomeHero.astro` (`--stage-ar`, `--front-*`).
+
+## `why-we-exist/`
+
+| File | Source folder | Bytes (unchanged) | Consent confirmed | Notes |
+| ---- | ------------- | ----------------- | ----------------- | ----- |
+| `IDT-34.jpg` | GWF Photos | 1,611,277 | **Pending** | **Used in the homepage Why We Exist section.** Four fellows leaning over shared worksheets, writing and discussing. The fellow on the left also appears in the hero photograph (IDT-46), a different shot. |
+
+- `src/assets/why/idt-34.jpg` is a byte-identical copy (same SHA-256). There are no exposure, colour or content edits.
+- Crops are CSS only (`object-fit: cover`): 1:1 at `object-position: 38% 40%` on phones, and 3:2 at `50% 35%` from 640px.
+- Canva was not used. The photograph needed no correction, its treatment matches the unedited hero, and full-resolution Canva exports are blocked by this environment's network policy.

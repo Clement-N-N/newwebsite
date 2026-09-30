@@ -96,6 +96,33 @@ Screenshots: `docs/screenshots/illuminated-hero-*`.
 - Now: "We help young people in Cameroon gain the skills, experience and networks for dignified work, through learning by doing, mentorship and real projects."
 - The homepage meta description still uses the document's original first sentence.
 
+### 4. Homepage "Why We Exist" section (2026-09-30)
+
+**Idea:** "The gap becomes a connection."
+
+- **Component:** `src/components/WhyWeExist.astro`, placed directly after the hero on `/`. The headline and both paragraphs are verbatim from the content reference (Home Page > Why We Exists Section). The eyebrow "WHY WE EXIST" was supplied in the build brief; the document itself has only the section label.
+- **Composition:** a white section with navy typography.
+  - **One coherent h2** with two visually distinct sentences: the first in regular weight, the second larger and semibold, with a yellow underline on "meaningful work."
+  - **The gap:** a deliberate space between the sentences, carrying a fine yellow line. The line turns the corner and descends past the first paragraph, ending in a small node beside the second paragraph, the response.
+  - **Grid geometry:** the headline and the response column are CSS subgrids of the section grid, so the corner sits exactly on the gap's centre at every width without JavaScript measurement.
+  - **Photograph:** GWF Photos / IDT-34.jpg, a 3:2 crop that bleeds off the left edge and takes 55–56% of the width on desktop. The first paragraph sits beside the second sentence; the response sits beside the photograph in larger navy type.
+- **Mobile:** eyebrow, both sentences separated by the gap, a full-bleed square photograph, the first paragraph, a short vertical yellow accent, then the response. The desktop diagram is not used on phones.
+- **Scroll moment:** CSS transitions plus a minimal IntersectionObserver that triggers once.
+  - Order: eyebrow and first sentence (20px rise), then the second sentence (masked 22px rise), then the photograph (vertical curtain, 900ms), then the paragraphs. The yellow line draws across, then down, and the node arrives last.
+  - The whole sequence completes in 1.48s.
+  - Content is hidden only after the script has marked the section, so it stays visible if scripting fails. Reduced motion and no-JS both show the complete composition immediately.
+- **Image:** `astro:assets` WebP, 640–2000px, with explicit dimensions, `loading="lazy"` and `sizes` set for each layout.
+
+Verified in Chromium at 1440, 1280, 1024, 768, 640, 390 and 320px:
+- No horizontal overflow; the photo loads; no console errors or failed requests.
+- Line geometry at 1024px and wider: the across-line ends exactly where the descent begins; the corner sits on the gap centre; the second sentence stays clear of the line; the descent meets the response and the node continues it; the photo bleeds left at 55–56% of the width.
+- Scroll timing, fast scroll (readable within 0.7s), reduced motion and no-JS all pass.
+- One coherent h2 in the accessibility tree; the line elements are hidden from assistive technology.
+- Header and hero regression suites pass. `npm run check`: 0 errors; the build passes.
+- Contrast: navy on white 15.57:1, text black on white 18.88:1. The yellow line and underline are decorative.
+
+Screenshots and recordings: `docs/screenshots/why-we-exist-*`.
+
 ## Missing content and assets
 
 - **Vector logo master.** Only raster files (PNG/WebP) were supplied. An SVG would be sharper at every size and lighter.
@@ -104,7 +131,7 @@ Screenshots: `docs/screenshots/illuminated-hero-*`.
 - **Organisation name.** The Website Content document uses "Impact Axis" throughout, and the logo reads "IMPACT AXIS". The build brief says "Impact Axis Foundation", which is currently used in page titles (`src/data/site.ts`). Confirm the public name.
 - **Contact page copy.** Not in the Website Content document. `/contact` has only its heading and uses the positioning line as its description.
 - **Photography, partner logos, video.** The Goodwill Fellowship folders are now reachable through the Google Drive connector (not through the network, which still blocks `drive.google.com`). Partner logos, team and board photos, The Hive photos and the YouTube testimonial (Sally Tabe) have not been fetched yet.
-- **Photo consent.** Not yet confirmed for the hero photograph (GWF Photos / IDT-46.jpg) or the two alternatives. Confirm consent before the site goes public.
+- **Photo consent.** Not yet confirmed for the hero photograph (GWF Photos / IDT-46.jpg), the Why We Exist photograph (IDT-34.jpg) or the two hero alternatives. Confirm consent before the site goes public.
 - **Team biographies.** The four core team entries have empty biographies in the content document.
 - **Timeline.** Refers to page 16 of the 2025 annual report, which has not been supplied.
 - **Reports.** The report PDFs (2023–2025 annual, 2026 H1, financial) have not been supplied.
@@ -125,9 +152,10 @@ Both are kept out of git because the repository is public and they contain priva
 - Illuminated hero: `@property` transitions need Firefox 128+ or Safari 16.4+. Older browsers move the light instantly instead of gliding.
 - (Earlier photographic hero, now unused) On phones the hero photograph sits partly below the fold, so most of its reveal plays before the visitor scrolls to it. The text reveal is immediate.
 - The hero's LCP element can be the cutout rather than the photograph, because the photograph starts fully clipped by the opening curtain. It measured about 0.95s locally.
+- Why We Exist: the desktop connecting line relies on CSS subgrid (Chrome 117+, Safari 16+, Firefox 71+). Older browsers keep the layout but may misplace the line.
 - Browser verification was automated in Chromium only. Safari/iOS and Firefox have not been checked by hand yet.
 - `/contact` is not in the primary navigation (per the navigation brief). It currently has no inbound link.
 
 ## Next piece
 
-**Section 2: Impact & Statistics.** Do not start other sections.
+**Section 2: Impact & Statistics** (per the owner's latest plan). Note that the content document's next homepage section after Why We Exist is *Our Solution*, not yet built. Do not start other sections.
