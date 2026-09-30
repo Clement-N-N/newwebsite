@@ -1,0 +1,34 @@
+---
+import type { HTMLAttributes, HTMLTag } from 'astro/types';
+
+type Props = HTMLAttributes<'div'> & {
+  as?: HTMLTag;
+  width?: 'prose' | 'content' | 'wide';
+};
+
+const { as: Tag = 'div', width = 'content', class: className, ...rest } = Astro.props;
+---
+
+<Tag class:list={['container', `container--${width}`, className]} {...rest}>
+  <slot />
+</Tag>
+
+<style>
+  .container {
+    width: 100%;
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .container--prose {
+    max-width: calc(var(--width-prose) + 2 * var(--gutter));
+  }
+
+  .container--content {
+    max-width: calc(var(--width-content) + 2 * var(--gutter));
+  }
+
+  .container--wide {
+    max-width: calc(var(--width-wide) + 2 * var(--gutter));
+  }
+</style>

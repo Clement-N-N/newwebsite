@@ -1,0 +1,22 @@
+---
+import Button from '../components/Button.astro';
+import PageIntro from '../components/PageIntro.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { pages } from '../data/site';
+
+const page = pages.notFound;
+---
+
+<BaseLayout {...page} description="The page you were looking for could not be found.">
+  <PageIntro title={page.title} lede="The page may have moved, or the address may be mistyped.">
+    <div class="actions">
+      <Button href="/" size="large">Go to the homepage</Button>
+    </div>
+  </PageIntro>
+</BaseLayout>
+
+<style>
+  .actions {
+    margin-top: var(--space-l);
+  }
+</style>

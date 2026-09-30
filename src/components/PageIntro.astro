@@ -1,0 +1,38 @@
+---
+import Container from './Container.astro';
+
+interface Props {
+  title: string;
+  lede?: string;
+}
+
+const { title, lede } = Astro.props;
+---
+
+<section class="page-intro" aria-labelledby="page-title">
+  <Container>
+    <h1 id="page-title" class="page-intro__title">{title}</h1>
+    {lede && <p class="page-intro__lede">{lede}</p>}
+    <slot />
+  </Container>
+</section>
+
+<style>
+  .page-intro {
+    padding-block: var(--space-section);
+  }
+
+  .page-intro__title {
+    max-width: 18ch;
+    font-size: var(--text-display);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .page-intro__lede {
+    max-width: var(--width-prose);
+    margin-top: var(--space-m);
+    font-size: var(--text-lg);
+    line-height: var(--leading-body);
+  }
+</style>

@@ -1,0 +1,48 @@
+---
+/*
+ * TEMPORARY TEXT TREATMENT.
+ * The official Impact Axis Foundation logo has not been supplied. Replace this
+ * wordmark with the genuine asset (preferably SVG) once it is available.
+ * Do not draw or approximate a logo here.
+ */
+import { site } from '../data/site';
+
+interface Props {
+  /** Visual tone of the wordmark. */
+  tone?: 'navy' | 'white';
+}
+
+const { tone = 'navy' } = Astro.props;
+const isHome = Astro.url.pathname === '/';
+---
+
+<a
+  href="/"
+  class:list={['logo', `logo--${tone}`]}
+  aria-current={isHome ? 'page' : undefined}
+  data-logo
+>
+  {site.name}
+</a>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    font-size: clamp(0.9375rem, 0.85rem + 0.35vw, 1.125rem);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-snug);
+    line-height: 1.1;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .logo--navy {
+    color: var(--color-navy);
+  }
+
+  .logo--white {
+    color: var(--color-white);
+  }
+</style>

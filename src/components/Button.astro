@@ -1,0 +1,79 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+type Common = {
+  variant?: 'primary';
+  size?: 'default' | 'large';
+  block?: boolean;
+  class?: string;
+};
+
+type LinkProps = Common & Omit<HTMLAttributes<'a'>, 'class'> & { href: string };
+type ButtonProps = Common & Omit<HTMLAttributes<'button'>, 'class'> & { href?: never };
+
+type Props = LinkProps | ButtonProps;
+
+const { variant = 'primary', size = 'default', block = false, class: className, ...rest } =
+  Astro.props;
+
+const classes = ['button', `button--${variant}`, `button--${size}`, block && 'button--block', className];
+---
+
+{
+  'href' in rest && rest.href ? (
+    <a class:list={classes} {...(rest as HTMLAttributes<'a'>)}>
+      <slot />
+    </a>
+  ) : (
+    <button type="button" class:list={classes} {...(rest as HTMLAttributes<'button'>)}>
+      <slot />
+    </button>
+  )
+}
+
+<style>
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2xs);
+    min-height: 2.75rem;
+    padding: 0.625rem 1.25rem;
+    border: 0;
+    border-radius: var(--radius-xs);
+    font-size: var(--text-nav);
+    font-weight: var(--weight-semibold);
+    line-height: 1.2;
+    letter-spacing: 0.005em;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color var(--duration-fast) var(--ease-out),
+      color var(--duration-fast) var(--ease-out);
+  }
+
+  .button--large {
+    min-height: 3.25rem;
+    padding: 0.875rem 1.5rem;
+    font-size: var(--text-base);
+  }
+
+  .button--block {
+    display: flex;
+    width: 100%;
+  }
+
+  .button--primary {
+    background-color: var(--color-yellow);
+    color: var(--color-navy);
+  }
+
+  .button--primary:hover {
+    background-color: var(--color-yellow-hover);
+  }
+
+  .button--primary:active {
+    background-color: var(--color-yellow-hover);
+  }
+</style>

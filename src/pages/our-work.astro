@@ -1,0 +1,11 @@
+---
+import PageIntro from '../components/PageIntro.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { pages } from '../data/site';
+
+const page = pages.ourWork;
+---
+
+<BaseLayout {...page}>
+  <PageIntro title={page.title} />
+</BaseLayout>
