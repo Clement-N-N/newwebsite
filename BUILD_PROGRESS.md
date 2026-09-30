@@ -123,6 +123,10 @@ Verified in Chromium at 1440, 1280, 1024, 768, 640, 390 and 320px:
 
 Screenshots and recordings: `docs/screenshots/why-we-exist-*`.
 
+**Alignment pass (2026-09-30):** both sentences now sit tight against the gap, so the yellow line runs through its middle. The first paragraph starts on the second sentence's cap line, and the response starts level with the photograph's top edge. Measured within 1–4px at 1440, 1280 and 1024.
+
+**Canva (requested for this section): blocked.** Every Canva host this would use (`www.canva.com`, `media.canva.com`, `export-download.canva.com`, `document-export.canva.com`) is denied by the environment's network policy, so no Canva output can be brought into the site from here. Canva would be used only for photographic work (crops and a restrained grade); text and the connecting line stay in HTML/CSS. To unblock, either add those domains to the environment's allowed network access, or export from Canva and upload the file.
+
 ## Missing content and assets
 
 - **Vector logo master.** Only raster files (PNG/WebP) were supplied. An SVG would be sharper at every size and lighter.

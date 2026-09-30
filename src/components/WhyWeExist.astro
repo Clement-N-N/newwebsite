@@ -243,8 +243,9 @@ const photoAlt =
       align-self: end;
     }
 
+    /* Both sentences sit tight against the gap, so it reads as one deliberate pause. */
     .why__second {
-      align-self: end;
+      align-self: start;
     }
 
     .why__gap {
@@ -297,17 +298,19 @@ const photoAlt =
       transform-origin: top center;
     }
 
-    /* The problem sits beside the second sentence, level with its last line. */
+    /* The problem starts level with the second sentence's cap line. */
     .why__problem {
       grid-column: 3;
       grid-row: 2;
-      align-self: end;
-      padding-top: var(--space-l);
+      align-self: start;
+      /* Pulls the smaller text's first line onto the headline's cap line. */
+      margin-top: -0.6rem;
     }
 
     /* The response sits beside the photograph, where the line arrives. */
     .why__answer {
-      --answer-pad: calc(var(--space-2xl) + var(--space-xs));
+      /* Matches the photograph's top margin, so the response starts level with it. */
+      --answer-pad: calc(var(--space-2xl) - 0.9rem);
       grid-column: 3;
       grid-row: 3 / span 2;
       padding-top: var(--answer-pad);
