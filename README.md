@@ -1,43 +1,75 @@
-# HIP Program Launch Prototype
+# Impact Start
 
-An immersive, scroll-driven site showcasing a program-launch prototype for the
-**Program Launch Lead / Director** application at High Impact Professionals (HIP).
+**Discover what your experience could make possible.**
 
-## Stack
+An interactive, evidence-linked career-impact discovery experience for experienced professionals. It is
+an **independent concept prototype** created for the Program Launch Lead / Director application at
+High Impact Professionals (HIP), not an official HIP product.
 
-- [Next.js 15](https://nextjs.org) (App Router, static output), TypeScript
-- Tailwind CSS v4
-- [Motion](https://motion.dev) for scroll and reveal animations, [Lenis](https://lenis.darkroom.engineering) for smooth scrolling
-- Deployed on Vercel (team `impact-axis`, project `newwebsite-7hfm`)
+* **Product walkthrough:** [docs/WALKTHROUGH.md](docs/WALKTHROUGH.md)
+* **Brand audit (incomplete, with temporary tokens):** [docs/BRAND_AUDIT.md](docs/BRAND_AUDIT.md)
+* **Design rationale:** [docs/DESIGN_RATIONALE.md](docs/DESIGN_RATIONALE.md)
+* **Limitations and assumptions:** [docs/LIMITATIONS.md](docs/LIMITATIONS.md)
+* **Test results:** [docs/TEST_RESULTS.md](docs/TEST_RESULTS.md)
 
-## Develop
+## Run it locally
+
+Requires Node 20 or later.
 
 ```bash
 npm install
-npm run dev     # http://localhost:3000
-npm run lint
-npm run build
+npm run dev          # http://localhost:3000
 ```
 
-## Editing content
+No API key is needed. Optional environment variables (see `.env.example`):
 
-All copy lives in [`src/content/site.ts`](src/content/site.ts). Search for `TODO`
-to find what still needs your details (program name, journey stages, your experience, links).
-
-## Structure
-
-| Path | Purpose |
+| Variable | Effect |
 | --- | --- |
-| `src/app/page.tsx` | Page sections: hero, context, opportunity, prototype journey, 90-day plan, why me, contact |
-| `src/components/Constellation.tsx` | Interactive canvas network in the hero |
-| `src/components/Journey.tsx` | Pinned section that scrolls the program stages horizontally |
-| `src/components/Reveal.tsx`, `Counter.tsx` | Scroll-triggered reveals and animated stats |
-| `src/components/SmoothScroll.tsx`, `ScrollProgress.tsx` | Smooth scrolling and the top progress bar |
+| `ANTHROPIC_API_KEY` | Enables AI-assisted wording of results on the server. Recommendations still come from the rules engine. |
+| `ENABLE_DEV_REVIEW=1` | Exposes `/dev/evaluations` on a production build (it is always available in `npm run dev`). |
 
-Animations respect `prefers-reduced-motion`. The site sets `noindex` by default.
+## Routes
 
-## Deploying
+| Route | What it is |
+| --- | --- |
+| `/` | Landing and introduction (also offers a fictional sample profile) |
+| `/discover` | Swipe Discovery |
+| `/crossroads` | Career Crossroads scenarios |
+| `/impact-map` | The Living Impact Map, with corrections |
+| `/reveal` | Seven-slide results reveal |
+| `/pathways` | Pathway details, comparison, save, investigate, set aside |
+| `/passport` | Impact Passport (print to PDF, shareable summary, data controls) |
+| `/learn` | First learning lesson |
+| `/dev/evaluations` | Dev-only console: fictional profiles, extraction, ranking, evidence, validator, events, seeded funnel |
+| `POST /api/report` | Builds and validates a report; optionally applies AI wording |
 
-Connect this GitHub repository to the Vercel project (Settings → Git). Vercel detects
-Next.js automatically: pushes to `main` deploy to production, and other branches get
-preview deployments. No environment variables are needed.
+## Checks
+
+```bash
+npm run typecheck    # TypeScript
+npm run lint         # ESLint
+npm test             # Vitest: engine, validator, analytics, API route, swipe interaction
+npm run build        # Production build
+npm run test:e2e     # Playwright: journey, touch/mouse/keyboard, errors, reduced motion, axe, viewports
+```
+
+`npm run test:e2e` needs a production build first. It starts `next start` on port 3100.
+
+## Code map
+
+```
+src/lib/assessment/   Question bank, vocabulary and labels (versioned)
+src/lib/knowledge/    Curated pathway library and source list (versioned)
+src/lib/engine/       Extraction, ranking, report building, Living Map graph, Zod schema, validator
+src/lib/ai/           Optional server-side AI wording layer and its prompt (versioned)
+src/lib/state/        Session state; nothing persists unless the participant opts in
+src/lib/analytics.ts  Allow-listed, versioned product events (no answer content)
+src/components/       UI by stage: landing, discover, crossroads, map, report, pathways, passport, learn, dev
+src/app/globals.css   Design tokens (temporary brand values)
+e2e/                  Playwright tests
+```
+
+## Deployment
+
+Deployed on Vercel (team `impact-axis`, project `newwebsite-7hfm`). `vercel.json` pins the Next.js
+framework preset. Pushes to `main` deploy to production.

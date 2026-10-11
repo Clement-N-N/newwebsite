@@ -1,0 +1,356 @@
+import type { Capability, Question, Signal } from "./types";
+
+/** Bump when wording, options or signal weights change, so analytics and reports stay comparable. */
+export const QUESTION_BANK_VERSION = "qb-2026.10.1";
+
+const cap = (key: Capability, weight = 2): Signal => ({ kind: "capability", key, weight, basis: "demonstrated" });
+
+export const QUESTIONS: Question[] = [
+  // ---------- Part 1: Discover ----------
+  {
+    id: "background",
+    stage: "discover",
+    type: "select",
+    purpose: "Anchors demonstrated capabilities in actual work history.",
+    prompt: "Where has most of your professional experience been?",
+    hint: "Choose up to two.",
+    max: 2,
+    options: [
+      {
+        id: "ops",
+        label: "Operations, programmes or general management",
+        evidence: "most of your experience is in operations and management",
+        signals: [cap("operations"), cap("leadership", 1)],
+      },
+      {
+        id: "finance",
+        label: "Finance, legal, risk or strategy",
+        evidence: "most of your experience is in finance, legal, risk or strategy",
+        signals: [cap("finance"), cap("policy", 1)],
+      },
+      {
+        id: "tech",
+        label: "Engineering, data or technology",
+        evidence: "most of your experience is in engineering, data or technology",
+        signals: [cap("technology")],
+      },
+      {
+        id: "research",
+        label: "Research, analysis or academia",
+        evidence: "most of your experience is in research and analysis",
+        signals: [cap("research")],
+      },
+      {
+        id: "comms",
+        label: "Communications, marketing, sales or public affairs",
+        evidence: "most of your experience is in communications, marketing or public affairs",
+        signals: [cap("communication"), cap("policy", 1)],
+      },
+      {
+        id: "people",
+        label: "People, HR, coaching or talent",
+        evidence: "most of your experience is in people, HR or talent",
+        signals: [cap("people")],
+      },
+      {
+        id: "founder",
+        label: "Founding or running a business",
+        evidence: "you have founded or run a business",
+        signals: [cap("entrepreneurship"), cap("leadership", 1)],
+      },
+    ],
+  },
+  {
+    id: "s-org-better",
+    stage: "discover",
+    type: "swipe",
+    purpose: "Demonstrated operations capability; motivation to improve systems.",
+    statement: "People rely on me to make complex organisations run better.",
+    evidenceYes: "people rely on you to make complex organisations run better",
+    yes: [cap("operations"), { kind: "motivation", key: "systems", weight: 1, basis: "stated" }],
+  },
+  {
+    id: "s-evidence",
+    stage: "discover",
+    type: "swipe",
+    purpose: "Demonstrated research and analysis capability.",
+    statement: "Colleagues come to me to make sense of messy data or evidence.",
+    evidenceYes: "colleagues come to you to make sense of messy data or evidence",
+    yes: [cap("research"), { kind: "motivation", key: "evidence", weight: 1, basis: "stated" }],
+  },
+  {
+    id: "s-built",
+    stage: "discover",
+    type: "swipe",
+    purpose: "Demonstrated ability to build from scratch; motivation to build organisations.",
+    statement: "I've built something from the ground up: a team, product, process or business.",
+    evidenceYes: "you have built a team, product, process or business from the ground up",
+    yes: [cap("entrepreneurship"), { kind: "motivation", key: "building", weight: 1, basis: "stated" }],
+  },
+  {
+    id: "s-lead",
+    stage: "discover",
+    type: "swipe",
+    purpose: "Demonstrated leadership and people development.",
+    statement: "I've led teams or managed people through significant change.",
+    evidenceYes: "you have led teams through significant change",
+    yes: [cap("leadership"), cap("people", 1)],
+  },
+  {
+    id: "s-explain",
+    stage: "discover",
+    type: "swipe",
+    purpose: "Demonstrated communication and persuasion.",
+    statement: "I'm good at explaining complex ideas and persuading sceptical people.",
+    evidenceYes: "you explain complex ideas and persuade sceptical people",
+    yes: [cap("communication"), cap("policy", 1)],
+  },
+  {
+    id: "s-behind",
+    stage: "discover",
+    type: "swipe",
+    purpose: "Preference for enabling roles versus front-line roles.",
+    statement: "My strongest contributions often happen behind the scenes.",
+    evidenceYes: "your strongest contributions often happen behind the scenes",
+    evidenceNo: "you tend to contribute most when you are visibly at the front",
+    yes: [{ kind: "mode", key: "enabling", weight: 2, basis: "stated" }],
+    no: [{ kind: "mode", key: "direct", weight: 1, basis: "stated" }],
+  },
+  {
+    id: "s-longterm",
+    stage: "discover",
+    type: "swipe",
+    purpose: "Tolerance for long feedback loops (relevant to research, policy and risk-reduction work).",
+    statement: "I'm motivated by problems whose results may take years to show.",
+    evidenceYes: "you are motivated by problems whose results may take years to show",
+    evidenceNo: "you are energised by results you can see relatively soon",
+    yes: [{ kind: "motivation", key: "longterm", weight: 2, basis: "stated" }],
+    no: [{ kind: "motivation", key: "tangible", weight: 2, basis: "stated" }],
+  },
+  {
+    id: "s-switch",
+    stage: "discover",
+    type: "swipe",
+    purpose: "Openness to a career change; decides whether a stretch pathway is appropriate.",
+    statement: "I'd seriously consider changing careers if the opportunity were compelling enough.",
+    evidenceYes: "you would seriously consider changing careers for a compelling opportunity",
+    evidenceNo: "you are not looking to change careers right now",
+    yes: [{ kind: "readiness", key: "switch", weight: 2, basis: "stated" }],
+    no: [
+      { kind: "readiness", key: "stay", weight: 2, basis: "stated" },
+      { kind: "mode", key: "resources", weight: 1, basis: "stated" },
+    ],
+  },
+  {
+    id: "causes",
+    stage: "discover",
+    type: "select",
+    purpose: "Stated cause interests. Used to steer, never to exclude.",
+    prompt: "Which problems would you most like to learn more about?",
+    hint: "Choose up to three, or none if you're not sure yet.",
+    max: 3,
+    options: [
+      {
+        id: "global-health",
+        label: "Global health and development",
+        evidence: "you want to learn more about global health and development",
+        signals: [{ kind: "cause", key: "global-health", weight: 2, basis: "stated" }],
+      },
+      {
+        id: "ai-safety",
+        label: "Making advanced AI safe and beneficial",
+        evidence: "you want to learn more about making advanced AI safe and beneficial",
+        signals: [{ kind: "cause", key: "ai-safety", weight: 2, basis: "stated" }],
+      },
+      {
+        id: "animal-welfare",
+        label: "Animal welfare",
+        evidence: "you want to learn more about animal welfare",
+        signals: [{ kind: "cause", key: "animal-welfare", weight: 2, basis: "stated" }],
+      },
+      {
+        id: "biosecurity",
+        label: "Preventing pandemics",
+        evidence: "you want to learn more about preventing pandemics",
+        signals: [{ kind: "cause", key: "biosecurity", weight: 2, basis: "stated" }],
+      },
+      {
+        id: "climate",
+        label: "Climate change",
+        evidence: "you want to learn more about climate change",
+        signals: [{ kind: "cause", key: "climate", weight: 2, basis: "stated" }],
+      },
+    ],
+  },
+  {
+    id: "contribution",
+    stage: "discover",
+    type: "rank",
+    purpose: "Preferred mode of contribution.",
+    prompt: "Rank how you'd most like to contribute.",
+    hint: "Drag, or use the arrow buttons. Top is most appealing.",
+    positionWeights: [3, 1.5, 0.5],
+    options: [
+      {
+        id: "direct",
+        label: "Working directly on a problem",
+        evidence: "you ranked working directly on a problem",
+        signals: [{ kind: "mode", key: "direct", weight: 1, basis: "stated" }],
+      },
+      {
+        id: "enabling",
+        label: "Building and running the organisations that do",
+        evidence: "you ranked building and running organisations",
+        signals: [{ kind: "mode", key: "enabling", weight: 1, basis: "stated" }],
+      },
+      {
+        id: "resources",
+        label: "Using my position, network or money to support the work",
+        evidence: "you ranked using your position, network or money",
+        signals: [{ kind: "mode", key: "resources", weight: 1, basis: "stated" }],
+      },
+    ],
+  },
+  {
+    id: "proud",
+    stage: "discover",
+    type: "text",
+    optional: true,
+    purpose: "Participant's own words, quoted back verbatim. Never sent to analytics.",
+    prompt: "In a sentence, what's a piece of work you're proud of?",
+    hint: "Optional. We'll quote it back to you, and only you will see it.",
+    maxLength: 280,
+  },
+
+  // ---------- Part 2: Career Crossroads ----------
+  {
+    id: "x-paycut",
+    stage: "crossroads",
+    type: "scenario",
+    purpose: "Reveals decision criteria and constraints. Financial concern is a constraint, not low motivation.",
+    title: "The offer",
+    situation:
+      "You lead a successful operations team at a large company. A mission-driven organisation asks you to run operations for an important global health programme. The role would involve a substantial pay cut.",
+    prompt: "What would you want to understand before deciding?",
+    multiple: true,
+    followUp: "Anything else that would shape this decision? (optional)",
+    options: [
+      {
+        id: "effectiveness",
+        label: "How effective the programme's work actually is",
+        evidence: "you would want to know how effective the work actually is",
+        reflection: "You look for evidence that the work achieves what it intends to.",
+        signals: [{ kind: "motivation", key: "evidence", weight: 2, basis: "stated" }],
+      },
+      {
+        id: "influence",
+        label: "How much responsibility and influence I'd have",
+        evidence: "you would want to know how much responsibility and influence you'd have",
+        reflection: "The scope to shape an organisation matters to you.",
+        signals: [{ kind: "motivation", key: "building", weight: 1, basis: "stated" }],
+      },
+      {
+        id: "finances",
+        label: "Whether my financial commitments would stay manageable",
+        evidence: "you would need your financial commitments to stay manageable",
+        reflection: "Financial sustainability is an important consideration in your decisions.",
+        signals: [{ kind: "constraint", key: "financial", weight: 2, basis: "stated" }],
+      },
+      {
+        id: "career",
+        label: "What it would mean for my long-term career",
+        evidence: "you would weigh what it means for your long-term career",
+        reflection: "You are weighing how a move affects your future options.",
+        signals: [{ kind: "constraint", key: "career-capital", weight: 1, basis: "stated" }],
+      },
+    ],
+  },
+  {
+    id: "x-transfer",
+    stage: "crossroads",
+    type: "scenario",
+    purpose: "Preferred route to contribution when a capability transfers.",
+    title: "The overlooked skill",
+    situation:
+      "You realise your most transferable capability may be one you rarely connect with social impact: the thing you do so routinely that you no longer notice it.",
+    prompt: "Which route would you most like to investigate?",
+    multiple: false,
+    followUp: "Why this one? (optional)",
+    options: [
+      {
+        id: "direct",
+        label: "Direct work on a pressing problem",
+        evidence: "you would most like to investigate direct work",
+        reflection: "You are drawn to being close to the problem itself.",
+        signals: [{ kind: "mode", key: "direct", weight: 2, basis: "stated" }],
+      },
+      {
+        id: "enabling",
+        label: "Strengthening the organisations doing that work",
+        evidence: "you would most like to investigate strengthening the organisations doing the work",
+        reflection: "You see leverage in making good organisations work better.",
+        signals: [{ kind: "mode", key: "enabling", weight: 2, basis: "stated" }],
+      },
+      {
+        id: "resources",
+        label: "Using the influence or resources of my current position",
+        evidence: "you would most like to investigate using the influence or resources of your current position",
+        reflection: "You see your current position as a platform, not just a job.",
+        signals: [{ kind: "mode", key: "resources", weight: 2, basis: "stated" }],
+      },
+    ],
+  },
+  {
+    id: "x-time",
+    stage: "crossroads",
+    type: "scenario",
+    purpose: "Realistic near-term commitment; drives the seven-day experiment.",
+    title: "Room to move",
+    situation:
+      "You want to make a bigger difference, but your current responsibilities leave little room for a career change in the next year.",
+    prompt: "Which would be most realistic for you?",
+    multiple: false,
+    followUp: "What makes this the realistic option? (optional)",
+    options: [
+      {
+        id: "project",
+        label: "A small, time-boxed exploration project",
+        evidence: "a small exploration project is most realistic for you",
+        reflection: "You favour learning by doing, in small steps.",
+        signals: [{ kind: "readiness", key: "test-first", weight: 1, basis: "stated" }],
+      },
+      {
+        id: "advising",
+        label: "Skilled volunteering or advising",
+        evidence: "skilled volunteering or advising is most realistic for you",
+        reflection: "Lending your expertise alongside your job looks feasible.",
+        signals: [
+          { kind: "mode", key: "enabling", weight: 1, basis: "stated" },
+          { kind: "constraint", key: "time", weight: 1, basis: "stated" },
+        ],
+      },
+      {
+        id: "giving",
+        label: "Effective giving or influence at work",
+        evidence: "effective giving or influence at work is most realistic for you",
+        reflection: "Your current position may be your strongest lever for now.",
+        signals: [
+          { kind: "mode", key: "resources", weight: 2, basis: "stated" },
+          { kind: "constraint", key: "time", weight: 1, basis: "stated" },
+        ],
+      },
+      {
+        id: "prepare",
+        label: "Preparing for a longer-term transition",
+        evidence: "preparing for a longer-term transition is most realistic for you",
+        reflection: "You are thinking in terms of a deliberate, longer transition.",
+        signals: [{ kind: "readiness", key: "long-horizon", weight: 2, basis: "stated" }],
+      },
+    ],
+  },
+];
+
+export const DISCOVER_QUESTIONS = QUESTIONS.filter((q) => q.stage === "discover");
+export const CROSSROADS_QUESTIONS = QUESTIONS.filter((q) => q.stage === "crossroads");
+export const QUESTION_BY_ID = Object.fromEntries(QUESTIONS.map((q) => [q.id, q])) as Record<string, Question>;
+export const REQUIRED_QUESTION_IDS = QUESTIONS.filter((q) => !q.optional).map((q) => q.id);
