@@ -1,9 +1,11 @@
 "use client";
 
+import { ChevronLeft, Pause } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { useAssessment } from "@/lib/state/AssessmentProvider";
 import { Button } from "../ui/Button";
+import { Aurora } from "../fx/Aurora";
 import { Dialog } from "../ui/Dialog";
 
 /** Shared chrome for the assessment: part label, progress, back and pause. */
@@ -14,8 +16,11 @@ export function StageShell({
   onBack,
   backLabel = "Back",
   aside,
+  dark = false,
   children,
 }: {
+  /** Deep-blue chapter treatment, used for the more cinematic crossroads. */
+  dark?: boolean;
   part: string;
   position: number;
   total: number;
@@ -30,19 +35,18 @@ export function StageShell({
   const pct = Math.round((position / total) * 100);
 
   return (
-    <div className="min-h-dvh bg-brand-surface pt-16">
+    <div className={`relative isolate min-h-dvh pt-16 ${dark ? "bg-brand-primary text-brand-on-primary" : "bg-brand-surface"}`}>
+      {dark && <Aurora tone="deep" className="!fixed" />}
       <div className="container-page pb-safe">
         <div className="flex items-center gap-3 py-3">
-          <Button variant="ghost" onClick={onBack} disabled={!onBack} className="!px-3" aria-label={backLabel}>
-            <svg aria-hidden width="18" height="18" viewBox="0 0 18 18">
-              <path d="M11 4 6 9l5 5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+          <Button variant={dark ? "onDarkGhost" : "ghost"} onClick={onBack} disabled={!onBack} className="ps-2.5 pe-3" aria-label={backLabel}>
+            <ChevronLeft size={18} strokeWidth={2} absoluteStrokeWidth aria-hidden />
             <span className="hidden sm:inline">Back</span>
           </Button>
           <div className="flex-1">
             <div className="flex items-baseline justify-between text-sm">
-              <span className="font-semibold text-brand-primary">{part}</span>
-              <span className="text-brand-muted">
+              <span className={`font-semibold ${dark ? "text-brand-on-primary" : "text-brand-primary"}`}>{part}</span>
+              <span className={`tabular-nums ${dark ? "text-brand-on-primary-muted" : "text-brand-muted"}`}>
                 {Math.min(position, total)} of {total}
               </span>
             </div>
@@ -53,20 +57,18 @@ export function StageShell({
               aria-valuemax={total}
               aria-valuenow={Math.min(position, total)}
               aria-valuetext={`${Math.min(position, total)} of ${total}`}
-              className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-brand-border"
+              className={`mt-1.5 h-1.5 overflow-hidden rounded-full ${dark ? "bg-white/15" : "bg-brand-border"}`}
             >
               <div className="h-full rounded-full bg-brand-accent transition-[width] duration-500 ease-out" style={{ width: `${pct}%` }} />
             </div>
           </div>
-          <Button variant="ghost" onClick={() => setPaused(true)} className="!px-3" aria-label="Pause">
-            <svg aria-hidden width="16" height="16" viewBox="0 0 16 16">
-              <path d="M5 3v10M11 3v10" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-            </svg>
+          <Button variant={dark ? "onDarkGhost" : "ghost"} onClick={() => setPaused(true)} className="ps-2.5 pe-3" aria-label="Pause">
+            <Pause size={16} strokeWidth={2} absoluteStrokeWidth aria-hidden />
             <span className="hidden sm:inline">Pause</span>
           </Button>
         </div>
 
-        <div className={`grid gap-8 pb-10 pt-2 ${aside ? "lg:grid-cols-[minmax(0,1fr)_22rem] xl:grid-cols-[minmax(0,1fr)_26rem]" : ""}`}>
+        <div className={`grid gap-8 pb-28 pt-2 md:pb-10 ${aside ? "lg:grid-cols-[minmax(0,1fr)_22rem] xl:grid-cols-[minmax(0,1fr)_26rem]" : ""}`}>
           <div className="mx-auto w-full max-w-2xl">{children}</div>
           {aside && <aside className="mx-auto hidden w-full max-w-2xl md:block lg:max-w-none">{aside}</aside>}
         </div>

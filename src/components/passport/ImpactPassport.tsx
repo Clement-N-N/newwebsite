@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Aurora } from "../fx/Aurora";
 import { track } from "@/lib/analytics";
 import type { Report } from "@/lib/engine/schema";
 import { useEnsureReport } from "@/lib/hooks/useEnsureReport";
@@ -35,6 +36,8 @@ export function ImpactPassport() {
   useEffect(() => {
     if (a.report) setShown(a.report);
   }, [a.report]);
+  const { markChapterSeen } = a;
+  useEffect(() => markChapterSeen("passport"), [markChapterSeen]);
 
   if (!a.hydrated) return <div className="min-h-dvh bg-brand-surface" />;
   if (!a.complete || !shown) {
@@ -96,7 +99,10 @@ export function ImpactPassport() {
         </p>
 
         <article className="surface-card overflow-hidden print:border-0 print:shadow-none">
-          <header className="bg-brand-primary p-6 text-brand-on-primary sm:p-10 print:bg-white print:p-0 print:text-brand-text">
+          <header className="relative isolate overflow-hidden bg-brand-primary p-6 text-brand-on-primary sm:p-10 print:bg-white print:p-0 print:text-brand-text">
+            <div className="no-print">
+              <Aurora tone="warm" />
+            </div>
             <p className="type-eyebrow text-brand-accent print:text-brand-accent-text">Impact Start · Impact Passport</p>
             <h1 className="type-h1 mt-3">What your experience could make possible</h1>
             <p className="mt-3 text-brand-on-primary-muted print:text-brand-muted">Prepared {date}. Hypotheses to explore, not conclusions.</p>

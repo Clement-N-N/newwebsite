@@ -6,6 +6,7 @@ import { DISCOVER_QUESTIONS } from "@/lib/assessment/questions";
 import { extractProfile } from "@/lib/engine/extract";
 import { useLiveMap } from "@/lib/hooks/useLiveMap";
 import { useAssessment } from "@/lib/state/AssessmentProvider";
+import { ChapterIntro } from "../journey/ChapterIntro";
 import { LinkButton } from "../ui/Button";
 import { ImpactMap } from "./ImpactMap";
 
@@ -27,6 +28,7 @@ export function ImpactMapPage() {
 
   return (
     <div className="min-h-dvh bg-brand-surface pb-16 pt-24">
+      <ChapterIntro chapterId="map" />
       <div className="container-page">
         <p className="type-eyebrow text-brand-accent-text">Your Living Impact Map</p>
         <h1 className="type-h1 mt-3 max-w-3xl text-brand-primary">Here&apos;s what we heard, and where it might lead.</h1>

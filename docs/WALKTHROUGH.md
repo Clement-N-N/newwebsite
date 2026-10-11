@@ -12,6 +12,12 @@ HIP wants a two-hour introductory experience for professionals new to high-impac
 is its first fifteen minutes: an interactive entry point that helps someone see their experience
 differently, then hands them one concrete experiment and the next step in HIP's learning journey.
 
+## Seven chapters, one idea in each
+
+The experience is framed as a short learning journey. Each chapter opens with a full-screen moment that
+teaches one concept (career capital, trade-offs, personal fit, hypotheses, routes to impact, small
+tests, and scale/neglectedness/tractability), then applies it to the participant.
+
 ## The journey in seven moments
 
 1. **Invitation.** "What could your experience make possible?" One clear action and an honest note on
@@ -24,13 +30,14 @@ differently, then hands them one concrete experiment and the next step in HIP's 
 4. **The Living Impact Map.** Capabilities, motivations and pathway hypotheses, connected by lines that
    mean something: solid lines link themes from the same answer; dashed lines are hypotheses. Select
    anything to see its evidence; remove anything that's wrong.
-5. **The Reveal.** Seven slides: your story (including your own words), hidden professional capital,
+5. **The Reveal, "Impact Wrapped".** A cover made from the participant's own themes, then seven story-style slides: your story (including your own words), hidden professional capital,
    what drives you, the map, possibilities, the important unknowns, and one seven-day experiment.
 6. **Pathways.** Three differentiated hypotheses (adjacent, stretch, without changing jobs) with need,
    mechanism, assumptions, constraints, background reading and a cheap test. Compare them in categories,
    save one, choose one to investigate, or set one aside and get a replacement.
 7. **Impact Passport and learning.** A printable record and a privacy-safe summary to share, followed
-   by a first lesson on judging whether a path is high-impact, linking only to HIP's own resources.
+   by an interactive lesson: try the problem lens, see the three routes to impact against your own
+   ranking, and climb a ladder of cheap tests. It links only to HIP's own resources.
 
 ## Why this is a launch-ready shape, not just a demo
 

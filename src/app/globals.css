@@ -15,6 +15,7 @@
   --brand-accent: #f28c28; /* orange (temporary); never as text on white */
   --brand-accent-text: #a65200; /* orange tone for text on light surfaces, 5.5:1 */
   --brand-accent-hover: #f59d45;
+  --brand-accent-on-dark: #ffb366; /* orange tone for text on deep blue, including glow-lit areas: 5.5:1 or better */
   --brand-accent-soft: #fdebd8;
   --brand-background: #ffffff;
   --brand-surface: #f4f6f9;
@@ -32,8 +33,14 @@
 
   --radius-card: 1.25rem;
   --radius-button: 0.625rem;
-  --shadow-soft: 0 1px 2px rgb(11 42 74 / 0.06), 0 12px 32px -12px rgb(11 42 74 / 0.18);
-  --shadow-lifted: 0 2px 4px rgb(11 42 74 / 0.08), 0 28px 60px -20px rgb(11 42 74 / 0.35);
+  /* Elevation: a 1px ring, lift, then ambient depth (better-ui shadow recipe, tinted to brand blue). */
+  --shadow-border: 0 0 0 1px oklch(0.27 0.06 252 / 0.08), 0 1px 2px -1px oklch(0.27 0.06 252 / 0.08), 0 2px 4px 0 oklch(0.27 0.06 252 / 0.05);
+  --shadow-border-hover: 0 0 0 1px oklch(0.27 0.06 252 / 0.12), 0 1px 2px -1px oklch(0.27 0.06 252 / 0.1), 0 2px 4px 0 oklch(0.27 0.06 252 / 0.07);
+  --shadow-soft: var(--shadow-border), 0 12px 32px -12px oklch(0.27 0.06 252 / 0.18);
+  --shadow-lifted: var(--shadow-border), 0 28px 60px -20px oklch(0.27 0.06 252 / 0.38);
+  /* On deep-blue chapters depth shadows vanish, so surfaces keep one light ring. */
+  --shadow-on-dark: 0 0 0 1px oklch(1 0 0 / 0.1);
+  --shadow-on-dark-hover: 0 0 0 1px oklch(1 0 0 / 0.18);
   --motion-standard: 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
   --motion-emphasis: 640ms cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -45,6 +52,7 @@
   --color-brand-accent: var(--brand-accent);
   --color-brand-accent-text: var(--brand-accent-text);
   --color-brand-accent-hover: var(--brand-accent-hover);
+  --color-brand-accent-on-dark: var(--brand-accent-on-dark);
   --color-brand-accent-soft: var(--brand-accent-soft);
   --color-brand-background: var(--brand-background);
   --color-brand-surface: var(--brand-surface);
@@ -65,6 +73,7 @@
   --radius-button: var(--radius-button);
   --shadow-soft: var(--shadow-soft);
   --shadow-lifted: var(--shadow-lifted);
+  --shadow-on-dark: var(--shadow-on-dark);
 }
 
 html {
@@ -144,9 +153,17 @@ body {
 
 @utility surface-card {
   background: var(--brand-background);
-  border: 1px solid var(--brand-border);
+  border: 1px solid transparent; /* forced-colors mode drops box-shadow and paints this edge */
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-soft);
+}
+
+@utility surface-dark {
+  background: oklch(1 0 0 / 0.05);
+  border: 1px solid transparent;
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-on-dark);
+  backdrop-filter: blur(12px);
 }
 
 @utility container-page {
@@ -161,6 +178,15 @@ body {
 
 @utility pb-safe {
   padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+dialog {
+  overscroll-behavior: contain;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
 }
 
 dialog::backdrop {

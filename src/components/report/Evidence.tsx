@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronDown } from "lucide-react";
 import { useId, useState } from "react";
 import { QUESTION_BY_ID } from "@/lib/assessment/questions";
 import type { EvidenceRef } from "@/lib/engine/schema";
@@ -41,9 +42,13 @@ export function EvidenceToggle({
         }`}
       >
         {label}
-        <span aria-hidden className={`transition-transform ${open ? "rotate-180" : ""}`}>
-          ▾
-        </span>
+        <ChevronDown
+          size={16}
+          strokeWidth={2}
+          absoluteStrokeWidth
+          aria-hidden
+          className={`transition-[rotate] duration-150 ease-out ${open ? "rotate-180" : ""}`}
+        />
       </button>
       <div id={id} hidden={!open} className={`mt-1 space-y-2 text-sm ${muted}`}>
         {evidence.length > 0 && (

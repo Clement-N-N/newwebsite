@@ -31,6 +31,7 @@ interface PersistedState {
   selectedPathwayId: string | null;
   sampleId: string | null;
   tutorialSeen: boolean;
+  chaptersSeen: string[];
   lessonsCompleted: string[];
   feedback: { recognised?: string; useful?: string };
   report: Report | null;
@@ -44,6 +45,7 @@ const EMPTY: PersistedState = {
   selectedPathwayId: null,
   sampleId: null,
   tutorialSeen: false,
+  chaptersSeen: [],
   lessonsCompleted: [],
   feedback: {},
   report: null,
@@ -61,6 +63,7 @@ interface AssessmentContextValue extends PersistedState {
   toggleSavedPathway: (id: string) => void;
   selectPathway: (id: string) => void;
   markTutorialSeen: () => void;
+  markChapterSeen: (id: string) => void;
   completeLesson: (id: string) => void;
   giveFeedback: (key: "recognised" | "useful", value: string) => void;
   requestReport: () => Promise<void>;
@@ -208,6 +211,8 @@ export function AssessmentProvider({ children }: { children: ReactNode }) {
         update({ selectedPathwayId: id });
       },
       markTutorialSeen: () => update({ tutorialSeen: true }),
+      // Returns the same state object when nothing changes, so callers can run this from effects.
+      markChapterSeen: (id) => setState((s) => (s.chaptersSeen.includes(id) ? s : { ...s, chaptersSeen: [...s.chaptersSeen, id] })),
       completeLesson: (id) => update((s) => ({ lessonsCompleted: [...new Set([...s.lessonsCompleted, id])] })),
       giveFeedback: (key, value) => {
         track("feedback_submitted", { questionId: key, rating: value });
@@ -216,7 +221,7 @@ export function AssessmentProvider({ children }: { children: ReactNode }) {
       loadSample: (id) => {
         const sample = SAMPLE_BY_ID[id];
         if (!sample) return;
-        setState({ ...EMPTY, responses: sample.responses, sampleId: id, tutorialSeen: true });
+        setState({ ...EMPTY, responses: sample.responses, sampleId: id, tutorialSeen: true, chaptersSeen: ["discover", "crossroads", "map"] });
         setReportStatus({ state: "idle" });
       },
       setPersist: (next) => setPersistState(next),

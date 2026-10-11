@@ -1,6 +1,7 @@
 "use client";
 
 import { Reorder, useReducedMotion } from "motion/react";
+import { ArrowDown, ArrowUp, Check } from "lucide-react";
 import { useState } from "react";
 import type { Answer, RankQuestion, SelectQuestion, TextQuestion } from "@/lib/assessment/types";
 import { Button } from "../ui/Button";
@@ -48,7 +49,7 @@ export function SelectCard({
               aria-pressed={on}
               disabled={!on && atMax}
               onClick={() => toggle(o.id)}
-              className={`flex min-h-14 items-center gap-3 rounded-xl border-[1.5px] px-4 py-3 text-left font-semibold transition-colors disabled:opacity-45 ${
+              className={`flex min-h-14 items-center gap-3 rounded-xl border-[1.5px] px-4 py-3 text-left font-semibold transition-[background-color,color,border-color,scale] duration-150 ease-out enabled:active:scale-[0.96] disabled:opacity-45 ${
                 on ? "border-brand-primary bg-brand-primary text-brand-on-primary" : "border-brand-border-strong bg-brand-background hover:bg-brand-primary-soft"
               }`}
             >
@@ -56,7 +57,7 @@ export function SelectCard({
                 aria-hidden
                 className={`grid h-5 w-5 shrink-0 place-items-center rounded-md border-[1.5px] ${on ? "border-brand-accent bg-brand-accent text-brand-primary" : "border-current"}`}
               >
-                {on && "✓"}
+                {on && <Check size={14} strokeWidth={2.5} absoluteStrokeWidth />}
               </span>
               {o.label}
             </button>
@@ -122,7 +123,7 @@ export function RankCard({
                 aria-label={`Move “${byId[id].label}” up`}
                 className="grid h-11 w-11 place-items-center rounded-lg border border-brand-border-strong disabled:opacity-30"
               >
-                ↑
+                <ArrowUp size={18} strokeWidth={2} absoluteStrokeWidth aria-hidden />
               </button>
               <button
                 type="button"
@@ -131,7 +132,7 @@ export function RankCard({
                 aria-label={`Move “${byId[id].label}” down`}
                 className="grid h-11 w-11 place-items-center rounded-lg border border-brand-border-strong disabled:opacity-30"
               >
-                ↓
+                <ArrowDown size={18} strokeWidth={2} absoluteStrokeWidth aria-hidden />
               </button>
             </span>
           </Reorder.Item>

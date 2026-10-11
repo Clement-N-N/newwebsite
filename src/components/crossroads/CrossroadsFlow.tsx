@@ -1,19 +1,51 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
+import {
+  ArrowRight,
+  Building2,
+  Check,
+  Compass,
+  FlaskConical,
+  GraduationCap,
+  HandCoins,
+  HeartHandshake,
+  type LucideIcon,
+  MessagesSquare,
+  Microscope,
+  Target,
+  TrendingUp,
+  Wallet,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { CROSSROADS_QUESTIONS, DISCOVER_QUESTIONS } from "@/lib/assessment/questions";
 import type { ScenarioQuestion } from "@/lib/assessment/types";
 import { track } from "@/lib/analytics";
-import { motionEmphasis } from "@/lib/design/motion";
+import { exitSubtle, rise, stagger } from "@/lib/design/motion";
 import { extractProfile } from "@/lib/engine/extract";
 import { useAssessment } from "@/lib/state/AssessmentProvider";
 import { LiveMapPanel } from "../discover/LiveMapPanel";
 import { StageShell } from "../discover/StageShell";
+import { WordReveal } from "../fx/WordReveal";
+import { ChapterIntro } from "../journey/ChapterIntro";
 import { Button } from "../ui/Button";
 
 const SCENARIOS = CROSSROADS_QUESTIONS as ScenarioQuestion[];
+
+const OPTION_ICONS: Record<string, LucideIcon> = {
+  effectiveness: Microscope,
+  influence: Compass,
+  finances: Wallet,
+  career: TrendingUp,
+  direct: Target,
+  enabling: Building2,
+  resources: HandCoins,
+  project: FlaskConical,
+  advising: MessagesSquare,
+  giving: HeartHandshake,
+  prepare: GraduationCap,
+};
 
 function Scenario({ q, number, onDone }: { q: ScenarioQuestion; number: number; onDone: () => void }) {
   const { responses, setAnswer } = useAssessment();
@@ -35,56 +67,57 @@ function Scenario({ q, number, onDone }: { q: ScenarioQuestion; number: number; 
   };
 
   useEffect(() => {
-    if (confirmed) reflectionRef.current?.focus();
+    if (confirmed) reflectionRef.current?.focus({ preventScroll: false });
   }, [confirmed]);
 
   const chosen = q.options.filter((o) => values.includes(o.id));
 
   return (
-    <article className="overflow-hidden rounded-[calc(var(--radius-card)+0.25rem)] bg-brand-background shadow-[var(--shadow-lifted)]">
-      <div className="bg-brand-primary p-6 text-brand-on-primary sm:p-10">
-        <p className="type-eyebrow text-brand-accent">
-          Crossroads {number} of {SCENARIOS.length} · {q.title}
-        </p>
-        <p className="type-lede mt-4 font-medium sm:text-[1.375rem] sm:leading-snug">{q.situation}</p>
-      </div>
+    <motion.article initial="hidden" animate="visible" variants={stagger}>
+      <motion.p variants={rise} className="type-eyebrow text-brand-accent-on-dark">
+        Crossroads {number} of {SCENARIOS.length} · {q.title}
+      </motion.p>
+      <WordReveal as="p" text={q.situation} className="mt-5 text-[clamp(1.375rem,1rem+1.6vw,2.125rem)] font-semibold leading-snug" delay={0.15} />
 
-      <div className="p-6 sm:p-10">
-        <h2 id={`${q.id}-prompt`} className="type-h2 text-brand-primary">
-          {q.prompt}
-        </h2>
-        <p className="mt-1 text-brand-muted">{q.multiple ? "Choose any that apply." : "Choose one."} There is no right answer.</p>
+      <motion.h2 variants={rise} id={`${q.id}-prompt`} className="type-h2 mt-12 text-brand-accent-on-dark">
+        {q.prompt}
+      </motion.h2>
+      <motion.p variants={rise} className="mt-1 text-brand-on-primary-muted">
+        {q.multiple ? "Choose any that apply." : "Choose one."} There is no right answer.
+      </motion.p>
 
-        <div role="group" aria-labelledby={`${q.id}-prompt`} className="mt-6 grid gap-3">
-          {q.options.map((o) => {
-            const on = values.includes(o.id);
-            return (
-              <motion.button
-                key={o.id}
-                type="button"
-                layout
-                aria-pressed={on}
-                onClick={() => toggle(o.id)}
-                whileTap={{ scale: 0.985 }}
-                className={`flex min-h-16 items-center gap-4 rounded-2xl border-[1.5px] px-5 py-4 text-left text-base font-semibold transition-colors sm:text-[1.0625rem] ${
-                  on ? "border-brand-primary bg-brand-primary-soft text-brand-primary" : "border-brand-border-strong hover:bg-brand-surface"
+      <motion.div variants={rise} role="group" aria-labelledby={`${q.id}-prompt`} className="mt-6 grid gap-3 sm:grid-cols-2">
+        {q.options.map((o) => {
+          const on = values.includes(o.id);
+          const Icon = OPTION_ICONS[o.id] ?? Target;
+          return (
+            <button
+              key={o.id}
+              type="button"
+              aria-pressed={on}
+              onClick={() => toggle(o.id)}
+              className={`group relative flex min-h-20 items-start gap-4 rounded-2xl border px-5 py-4 text-left text-base font-semibold transition-[background-color,box-shadow,scale] duration-150 ease-out active:scale-[0.96] sm:text-[1.0625rem] ${
+                on
+                  ? "border-transparent bg-brand-on-primary text-brand-primary shadow-[0_0_0_2px_var(--brand-accent)]"
+                  : "border-transparent bg-white/[0.06] shadow-[var(--shadow-on-dark)] hover:bg-white/[0.1] hover:shadow-[var(--shadow-on-dark-hover)]"
+              }`}
+            >
+              <span
+                aria-hidden
+                className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl transition-[background-color,color] duration-150 ${
+                  on ? "bg-brand-accent text-brand-primary" : "bg-white/10 text-brand-accent-on-dark"
                 }`}
               >
-                <span
-                  aria-hidden
-                  className={`grid h-6 w-6 shrink-0 place-items-center border-[1.5px] ${q.multiple ? "rounded-md" : "rounded-full"} ${
-                    on ? "border-brand-primary bg-brand-primary text-brand-on-primary" : "border-brand-border-strong"
-                  }`}
-                >
-                  {on && (q.multiple ? "✓" : <span className="h-2.5 w-2.5 rounded-full bg-brand-accent" />)}
-                </span>
-                {o.label}
-              </motion.button>
-            );
-          })}
-        </div>
+                {on ? <Check size={20} strokeWidth={2.5} absoluteStrokeWidth /> : <Icon size={20} strokeWidth={2} absoluteStrokeWidth />}
+              </span>
+              <span className="pt-1.5">{o.label}</span>
+            </button>
+          );
+        })}
+      </motion.div>
 
-        <label htmlFor={`${q.id}-note`} className="mt-6 block font-semibold">
+      <motion.div variants={rise}>
+        <label htmlFor={`${q.id}-note`} className="mt-8 block font-semibold">
           {q.followUp}
         </label>
         <textarea
@@ -96,48 +129,48 @@ function Scenario({ q, number, onDone }: { q: ScenarioQuestion; number: number; 
             if (confirmed) setConfirmed(false);
           }}
           rows={2}
-          className="mt-2 w-full rounded-xl border-[1.5px] border-brand-border-strong p-3"
+          className="mt-2 w-full rounded-xl border border-white/30 bg-white/[0.06] p-3 text-brand-on-primary placeholder:text-brand-on-primary-muted"
         />
+      </motion.div>
 
-        <AnimatePresence initial={false}>
-          {confirmed && (
-            <motion.div
-              ref={reflectionRef}
-              tabIndex={-1}
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={motionEmphasis}
-              className="overflow-hidden outline-none"
-              aria-live="polite"
-            >
-              <div className="mt-6 rounded-2xl bg-brand-surface p-5">
-                <p className="type-eyebrow text-brand-accent-text">What this tells us</p>
-                <ul className="mt-2 space-y-1.5">
-                  {chosen.map((o) => (
-                    <li key={o.id}>{o.reflection}</li>
-                  ))}
-                  {note.trim() && <li>We&apos;ve noted what you added, and it will appear in your passport.</li>}
-                </ul>
-                <p className="mt-3 text-sm text-brand-muted">Your map has been updated. You can change this answer at any time.</p>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+      <AnimatePresence initial={false}>
+        {confirmed && (
+          <motion.div
+            ref={reflectionRef}
+            tabIndex={-1}
+            initial={{ opacity: 0, y: 12, filter: "blur(4px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.3, ease: "easeOut" } }}
+            exit={exitSubtle}
+            className="mt-8 outline-none"
+            aria-live="polite"
+          >
+            <div className="rounded-[var(--radius-card)] bg-brand-accent p-6 text-brand-primary">
+              <p className="type-eyebrow">What this tells us</p>
+              <ul className="mt-3 space-y-2 text-lg font-semibold">
+                {chosen.map((o) => (
+                  <li key={o.id}>{o.reflection}</li>
+                ))}
+                {note.trim() && <li>We&apos;ve noted what you added. It will appear in your passport.</li>}
+              </ul>
+              <p className="mt-3 text-sm">Your map has been updated. You can change this answer at any time.</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-        <div className="mt-6 flex justify-end">
-          {confirmed ? (
-            <Button variant="primary" size="lg" onClick={onDone}>
-              {number === SCENARIOS.length ? "See your Impact Map" : "Next crossroads"}
-            </Button>
-          ) : (
-            <Button variant="secondary" size="lg" disabled={values.length === 0 && !note.trim()} onClick={confirm}>
-              Confirm
-            </Button>
-          )}
-        </div>
+      <div className="mt-8 flex justify-end">
+        {confirmed ? (
+          <Button size="lg" onClick={onDone} className="ps-6 pe-5">
+            {number === SCENARIOS.length ? "See your Impact Map" : "Next crossroads"}
+            <ArrowRight size={20} strokeWidth={2} absoluteStrokeWidth aria-hidden />
+          </Button>
+        ) : (
+          <Button variant="onDark" size="lg" disabled={values.length === 0 && !note.trim()} onClick={confirm}>
+            Confirm
+          </Button>
+        )}
       </div>
-    </article>
+    </motion.article>
   );
 }
 
@@ -157,7 +190,7 @@ export function CrossroadsFlow() {
     if (index !== null) track("question_viewed", { questionId: SCENARIOS[index].id, questionType: "scenario", stage: "crossroads" });
   }, [index]);
 
-  if (index === null) return <div className="min-h-dvh bg-brand-surface" />;
+  if (index === null) return <div className="min-h-dvh bg-brand-primary" />;
 
   const missingDiscover = DISCOVER_QUESTIONS.filter((q) => !q.optional && !responses[q.id]).length;
 
@@ -173,25 +206,21 @@ export function CrossroadsFlow() {
 
   return (
     <StageShell
+      dark
       part="Part 2 · Career Crossroads"
       position={index + 1}
       total={SCENARIOS.length}
       onBack={index > 0 ? () => setIndex(index - 1) : () => router.push("/discover")}
-      aside={<LiveMapPanel />}
+      aside={<LiveMapPanel onDark />}
     >
+      <ChapterIntro chapterId="crossroads" />
       {missingDiscover > 0 && (
-        <p className="mb-4 rounded-xl bg-brand-warning-soft p-4 text-sm text-brand-warning">
+        <p className="mb-6 rounded-xl bg-white/10 p-4 text-sm">
           You skipped {missingDiscover} question{missingDiscover === 1 ? "" : "s"} in Part 1. You can carry on here and go back later.
         </p>
       )}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={SCENARIOS[index].id}
-          initial={{ opacity: 0, x: 40 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -40 }}
-          transition={motionEmphasis}
-        >
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div key={SCENARIOS[index].id} exit={exitSubtle}>
           <Scenario q={SCENARIOS[index]} number={index + 1} onDone={next} />
         </motion.div>
       </AnimatePresence>

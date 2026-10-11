@@ -1,7 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { completeCrossroads, completeDiscover, noHorizontalOverflow, startAssessment } from "./helpers";
+import { beginChapter, completeCrossroads, completeDiscover, noHorizontalOverflow, startAssessment } from "./helpers";
 
 test("a participant completes the whole journey", async ({ page }) => {
+  // The full journey crosses seven chapters with real animations, so it gets more time.
+  test.setTimeout(150_000);
   await startAssessment(page);
   await completeDiscover(page);
 
@@ -19,8 +21,10 @@ test("a participant completes the whole journey", async ({ page }) => {
   await expect(page.getByRole("button", { name: /^Leadership\./ })).toBeVisible();
 
   await page.getByRole("link", { name: "Reveal your results" }).click();
-  await expect(page.getByRole("heading", { name: "Your career has equipped you with more than a job title." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Here's what your experience could make possible." })).toBeVisible();
   await expect(page.getByText(/No AI was used/)).toBeVisible();
+  await page.getByRole("button", { name: "Play your results" }).click();
+  await expect(page.getByRole("heading", { name: "Your career has equipped you with more than a job title." })).toBeVisible();
   await expect(page.getByText(/supplier onboarding/)).toBeVisible();
 
   const headings = [
@@ -40,6 +44,7 @@ test("a participant completes the whole journey", async ({ page }) => {
   // Pathways: open, compare, save, choose, reject.
   await page.getByRole("link", { name: "Explore your pathways" }).click();
   await page.waitForURL("**/pathways");
+  await beginChapter(page, 5);
   const cards = page.getByRole("listitem").filter({ has: page.getByRole("button", { name: "Open details" }) });
   await expect(cards).toHaveCount(3);
   await cards.first().getByRole("button", { name: "Open details" }).click();
@@ -81,7 +86,11 @@ test("a participant completes the whole journey", async ({ page }) => {
 
   await page.getByRole("link", { name: "Start the first lesson" }).click();
   await page.waitForURL("**/learn");
-  for (let i = 0; i < 5; i++) await page.getByRole("button", { name: "Next" }).click();
+  await beginChapter(page, 7);
+  for (let i = 0; i < 5; i++) {
+    await page.getByRole("button", { name: "Next" }).click();
+    await expect(page.getByText(i < 4 ? `Section ${i + 2} of 5` : "Check your thinking", { exact: true }).last()).toBeVisible();
+  }
   await page.getByLabel("The one that receives far less attention").check();
   await page.getByRole("button", { name: "Mark lesson complete" }).click();
   await expect(page.getByRole("heading", { name: "Where to go from here" })).toBeVisible();
@@ -117,7 +126,7 @@ test("if the analysis service fails, results still come from the in-browser engi
   await page.route("**/api/report", (route) => route.fulfill({ status: 500, body: "boom" }));
   await page.goto("/");
   await page.getByRole("button", { name: "View a sample profile" }).click();
-  await expect(page.getByRole("heading", { name: "Your career has equipped you with more than a job title." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Here's what your experience could make possible." })).toBeVisible();
   await expect(page.getByText(/couldn't reach the analysis service/)).toBeVisible();
   await expect(page.getByText(/Demonstration: these results belong to Amara/)).toBeVisible();
 });
@@ -169,6 +178,8 @@ test.describe("reduced motion", () => {
     await completeDiscover(page);
     await completeCrossroads(page);
     await page.getByRole("link", { name: "Reveal your results" }).click();
+    await expect(page.getByRole("heading", { name: "Here's what your experience could make possible." })).toBeVisible();
+    await page.keyboard.press("ArrowRight");
     await expect(page.getByRole("heading", { name: "Your career has equipped you with more than a job title." })).toBeVisible();
     await page.keyboard.press("ArrowRight");
     await expect(page.getByRole("heading", { name: "Here are the capabilities that keep showing up in your work." })).toBeVisible();

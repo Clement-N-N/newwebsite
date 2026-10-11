@@ -30,9 +30,9 @@ export function ReportStatusNotice({
   }
 
   return (
-    <div className="space-y-2">
+    <div className="flex flex-col gap-2">
       {report.meta.sample && (
-        <p className={`rounded-lg px-3 py-2 text-sm font-semibold ${onDark ? "bg-brand-accent text-brand-primary" : "bg-brand-accent-soft text-brand-accent-text"}`}>
+        <p className={`inline-flex self-start rounded-full px-3 py-1.5 text-sm font-semibold ${onDark ? "bg-white/10 text-brand-accent-on-dark" : "bg-brand-accent-soft text-brand-accent-text"}`}>
           Demonstration: these results belong to {SAMPLE_BY_ID[sampleId ?? ""]?.name ?? "a fictional sample participant"}, not a real person.
         </p>
       )}

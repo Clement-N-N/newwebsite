@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import { ArrowRight, Columns3, FlaskConical, Star } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { CAUSE_LABELS } from "@/lib/assessment/labels";
@@ -10,6 +11,7 @@ import type { PathwayRec } from "@/lib/engine/schema";
 import { useEnsureReport } from "@/lib/hooks/useEnsureReport";
 import { PATHWAY_BY_ID } from "@/lib/knowledge/pathways";
 import { SOURCES, isSourceId } from "@/lib/knowledge/sources";
+import { ChapterIntro } from "../journey/ChapterIntro";
 import { EvidenceToggle } from "../report/Evidence";
 import { ReportStatusNotice } from "../report/ReportStatusNotice";
 import { Button, LinkButton } from "../ui/Button";
@@ -157,6 +159,7 @@ export function PathwaysExplorer() {
 
   return (
     <div className="min-h-dvh bg-brand-surface pb-16 pt-24">
+      <ChapterIntro chapterId="pathways" />
       <div className="container-page">
         <p className="type-eyebrow text-brand-accent-text">Explore your pathways</p>
         <h1 className="type-h1 mt-3 max-w-3xl text-brand-primary">Three hypotheses, side by side.</h1>
@@ -169,6 +172,7 @@ export function PathwaysExplorer() {
 
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <Button variant={compare ? "secondary" : "ghost"} aria-pressed={compare} onClick={() => setCompare((c) => !c)}>
+            <Columns3 size={18} strokeWidth={2} absoluteStrokeWidth aria-hidden />
             {compare ? "Hide comparison" : "Compare side by side"}
           </Button>
           <LinkButton href="/impact-map" variant="ghost">
@@ -236,7 +240,8 @@ export function PathwaysExplorer() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ ...motionEmphasis, delay: i * 0.08 }}
-                className={`surface-card flex flex-col p-6 ${isSelected ? "ring-2 ring-brand-accent" : ""}`}
+                whileHover={{ y: -4 }}
+                className={`surface-card flex flex-col p-6 transition-[box-shadow] duration-150 hover:shadow-[var(--shadow-lifted)] ${isSelected ? "ring-2 ring-brand-accent" : ""}`}
               >
                 <div className="flex items-start justify-between gap-2">
                   <Chip tone="accent">{p.roleLabel}</Chip>
@@ -271,7 +276,8 @@ export function PathwaysExplorer() {
                   </Button>
                   <div className="grid grid-cols-2 gap-2">
                     <Button variant="ghost" aria-pressed={saved} onClick={() => a.toggleSavedPathway(p.id)}>
-                      {saved ? "★ Saved" : "☆ Save"}
+                      <Star size={18} strokeWidth={2} absoluteStrokeWidth fill={saved ? "currentColor" : "none"} className={saved ? "text-brand-accent-text" : ""} aria-hidden />
+                      {saved ? "Saved" : "Save"}
                     </Button>
                     <Button variant="ghost" onClick={() => a.selectPathway(p.id)} disabled={isSelected}>
                       {isSelected ? "Chosen" : "Investigate"}
@@ -298,7 +304,9 @@ export function PathwaysExplorer() {
             className="mt-8 rounded-[var(--radius-card)] bg-brand-primary p-6 text-brand-on-primary sm:p-8"
             aria-live="polite"
           >
-            <p className="type-eyebrow text-brand-accent">Your seven-day experiment</p>
+            <p className="type-eyebrow flex items-center gap-2 text-brand-accent-on-dark">
+              <FlaskConical size={16} strokeWidth={2} absoluteStrokeWidth aria-hidden /> Your seven-day experiment
+            </p>
             <h2 className="type-h2 mt-2">{selected.experiment.title}</h2>
             <ol className="mt-4 list-decimal space-y-1.5 pl-5 text-brand-on-primary-muted">
               {selected.experiment.steps.map((s) => (
@@ -333,8 +341,8 @@ export function PathwaysExplorer() {
           <Link href="/reveal" className="min-h-11 py-2 font-semibold text-brand-primary underline underline-offset-4">
             ← Back to your results
           </Link>
-          <LinkButton href="/passport" size="lg">
-            Open your Impact Passport
+          <LinkButton href="/passport" size="lg" className="ps-6 pe-5">
+            Open your Impact Passport <ArrowRight size={20} strokeWidth={2} absoluteStrokeWidth aria-hidden />
           </LinkButton>
         </div>
       </div>

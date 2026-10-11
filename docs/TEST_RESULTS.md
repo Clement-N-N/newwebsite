@@ -45,48 +45,48 @@ landing, discovery or results), plus the full journey on a Pixel 7 profile.
 ✓ src/lib/engine/__tests__/engine.test.ts > validateReport > flags unsupported claims, invented figures and unknown sources
 ✓ src/lib/engine/__tests__/engine.test.ts > validateReport > flags evidence that cites an unanswered question
 ✓ src/lib/engine/__tests__/engine.test.ts > validateReport > rejects structurally invalid reports
-✓ src/components/__tests__/DiscoverFlow.test.tsx > DiscoverFlow > records swipe answers from buttons and arrow keys, and lets people go back and revise
-✓ src/components/__tests__/DiscoverFlow.test.tsx > DiscoverFlow > does not let arrow keys answer while focus is in another control
 ✓ src/lib/__tests__/analytics.test.ts > analytics > drops answer content and any non-allowlisted property
 ✓ src/lib/__tests__/analytics.test.ts > analytics > stamps every event with question, engine, library and prompt versions
 ✓ src/lib/__tests__/analytics.test.ts > privacySafeSummary > contains no free-text answers
+✓ src/components/__tests__/DiscoverFlow.test.tsx > DiscoverFlow > records swipe answers from buttons and arrow keys, and lets people go back and revise
+✓ src/components/__tests__/DiscoverFlow.test.tsx > DiscoverFlow > does not let arrow keys answer while focus is in another control
 ```
 
 ## End-to-end tests
 
 ```
-✓   2 [desktop] › e2e/journey.spec.ts:91:5 › keyboard-only users can complete Part 1 with arrow keys
-✓   3 [desktop] › e2e/journey.spec.ts:98:5 › answers survive going back, and revisions are recorded
-✓   4 [desktop] › e2e/journey.spec.ts:110:5 › results are not shown for an empty assessment
-✓   5 [desktop] › e2e/journey.spec.ts:116:5 › if the analysis service fails, results still come from the in-browser engine and say so
--   6 [desktop] › e2e/journey.spec.ts:125:5 › swiping a card by touch answers it
-✓   7 [desktop] › e2e/journey.spec.ts:151:5 › dragging a card with a mouse answers it
-✓   8 [desktop] › e2e/journey.spec.ts:165:7 › reduced motion › the experience works without animation
-✓   9 [desktop] › e2e/journey.spec.ts:178:5 › the dev review area loads fictional profiles and catches unsupported claims
-✓  10 [desktop] › e2e/quality.spec.ts:20:7 › accessibility (axe, WCAG 2.2 AA) › landing
-✓   1 [desktop] › e2e/journey.spec.ts:4:5 › a participant completes the whole journey
-✓  11 [desktop] › e2e/quality.spec.ts:26:7 › accessibility (axe, WCAG 2.2 AA) › discover and crossroads
-✓  13 [desktop] › e2e/quality.spec.ts:68:7 › no horizontal overflow at small-mobile (320px)
-✓  12 [desktop] › e2e/quality.spec.ts:39:7 › accessibility (axe, WCAG 2.2 AA) › results, pathways, passport and learning
-✓  14 [desktop] › e2e/quality.spec.ts:68:7 › no horizontal overflow at mobile (390px)
-✓  15 [desktop] › e2e/quality.spec.ts:68:7 › no horizontal overflow at tablet-portrait (820px)
-✓  16 [desktop] › e2e/quality.spec.ts:68:7 › no horizontal overflow at tablet-landscape (1180px)
-✓  17 [desktop] › e2e/quality.spec.ts:68:7 › no horizontal overflow at desktop (1440px)
--  19 [mobile] › e2e/journey.spec.ts:91:5 › keyboard-only users can complete Part 1 with arrow keys
-✓  20 [mobile] › e2e/journey.spec.ts:98:5 › answers survive going back, and revisions are recorded
-✓  21 [mobile] › e2e/journey.spec.ts:110:5 › results are not shown for an empty assessment
-✓  22 [mobile] › e2e/journey.spec.ts:116:5 › if the analysis service fails, results still come from the in-browser engine and say so
-✓  23 [mobile] › e2e/journey.spec.ts:125:5 › swiping a card by touch answers it
--  24 [mobile] › e2e/journey.spec.ts:151:5 › dragging a card with a mouse answers it
-✓  25 [mobile] › e2e/journey.spec.ts:165:7 › reduced motion › the experience works without animation
--  26 [mobile] › e2e/journey.spec.ts:178:5 › the dev review area loads fictional profiles and catches unsupported claims
-✓  27 [mobile] › e2e/quality.spec.ts:20:7 › accessibility (axe, WCAG 2.2 AA) › landing
-✓  28 [mobile] › e2e/quality.spec.ts:26:7 › accessibility (axe, WCAG 2.2 AA) › discover and crossroads
+✓   1 [desktop] › e2e/journey.spec.ts:100:5 › keyboard-only users can complete Part 1 with arrow keys
+✓   3 [desktop] › e2e/journey.spec.ts:107:5 › answers survive going back, and revisions are recorded
+✓   4 [desktop] › e2e/journey.spec.ts:119:5 › results are not shown for an empty assessment
+✓   5 [desktop] › e2e/journey.spec.ts:125:5 › if the analysis service fails, results still come from the in-browser engine and say so
+-   6 [desktop] › e2e/journey.spec.ts:134:5 › swiping a card by touch answers it
+✓   7 [desktop] › e2e/journey.spec.ts:160:5 › dragging a card with a mouse answers it
+✓   8 [desktop] › e2e/journey.spec.ts:174:7 › reduced motion › the experience works without animation
+✓   9 [desktop] › e2e/journey.spec.ts:189:5 › the dev review area loads fictional profiles and catches unsupported claims
+✓  10 [desktop] › e2e/quality.spec.ts:14:7 › accessibility (axe, WCAG 2.2 AA) › landing
+✓   2 [desktop] › e2e/journey.spec.ts:4:5 › a participant completes the whole journey (1.1m)
+✓  11 [desktop] › e2e/quality.spec.ts:20:7 › accessibility (axe, WCAG 2.2 AA) › discover and crossroads
+✓  13 [desktop] › e2e/quality.spec.ts:65:7 › no horizontal overflow at small-mobile (320px)
+✓  12 [desktop] › e2e/quality.spec.ts:34:7 › accessibility (axe, WCAG 2.2 AA) › results, pathways, passport and learning
+✓  14 [desktop] › e2e/quality.spec.ts:65:7 › no horizontal overflow at mobile (390px)
+✓  15 [desktop] › e2e/quality.spec.ts:65:7 › no horizontal overflow at tablet-portrait (820px)
+✓  16 [desktop] › e2e/quality.spec.ts:65:7 › no horizontal overflow at tablet-landscape (1180px)
+✓  17 [desktop] › e2e/quality.spec.ts:65:7 › no horizontal overflow at desktop (1440px)
+-  19 [mobile] › e2e/journey.spec.ts:100:5 › keyboard-only users can complete Part 1 with arrow keys
+✓  20 [mobile] › e2e/journey.spec.ts:107:5 › answers survive going back, and revisions are recorded
+✓  21 [mobile] › e2e/journey.spec.ts:119:5 › results are not shown for an empty assessment
+✓  22 [mobile] › e2e/journey.spec.ts:125:5 › if the analysis service fails, results still come from the in-browser engine and say so
+✓  23 [mobile] › e2e/journey.spec.ts:134:5 › swiping a card by touch answers it
+-  24 [mobile] › e2e/journey.spec.ts:160:5 › dragging a card with a mouse answers it
 ✓  18 [mobile] › e2e/journey.spec.ts:4:5 › a participant completes the whole journey
--  30 [mobile] › e2e/quality.spec.ts:68:7 › no horizontal overflow at small-mobile (320px)
--  31 [mobile] › e2e/quality.spec.ts:68:7 › no horizontal overflow at mobile (390px)
--  32 [mobile] › e2e/quality.spec.ts:68:7 › no horizontal overflow at tablet-portrait (820px)
--  33 [mobile] › e2e/quality.spec.ts:68:7 › no horizontal overflow at tablet-landscape (1180px)
--  34 [mobile] › e2e/quality.spec.ts:68:7 › no horizontal overflow at desktop (1440px)
-✓  29 [mobile] › e2e/quality.spec.ts:39:7 › accessibility (axe, WCAG 2.2 AA) › results, pathways, passport and learning
+-  26 [mobile] › e2e/journey.spec.ts:189:5 › the dev review area loads fictional profiles and catches unsupported claims
+✓  27 [mobile] › e2e/quality.spec.ts:14:7 › accessibility (axe, WCAG 2.2 AA) › landing
+✓  25 [mobile] › e2e/journey.spec.ts:174:7 › reduced motion › the experience works without animation
+✓  28 [mobile] › e2e/quality.spec.ts:20:7 › accessibility (axe, WCAG 2.2 AA) › discover and crossroads
+-  30 [mobile] › e2e/quality.spec.ts:65:7 › no horizontal overflow at small-mobile (320px)
+-  31 [mobile] › e2e/quality.spec.ts:65:7 › no horizontal overflow at mobile (390px)
+-  32 [mobile] › e2e/quality.spec.ts:65:7 › no horizontal overflow at tablet-portrait (820px)
+-  33 [mobile] › e2e/quality.spec.ts:65:7 › no horizontal overflow at tablet-landscape (1180px)
+-  34 [mobile] › e2e/quality.spec.ts:65:7 › no horizontal overflow at desktop (1440px)
+✓  29 [mobile] › e2e/quality.spec.ts:34:7 › accessibility (axe, WCAG 2.2 AA) › results, pathways, passport and learning
 ```

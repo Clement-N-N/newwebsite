@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
-import { noHorizontalOverflow } from "./helpers";
+import { beginChapter, noHorizontalOverflow, openSample } from "./helpers";
 
 async function axe(page: Page) {
   await page.waitForTimeout(1200); // fades in progress would otherwise be reported as low contrast
@@ -9,12 +9,6 @@ async function axe(page: Page) {
   expect(serious.map((v) => `${v.id}: ${v.help} (${v.nodes.map((n) => n.target.join(" ")).join(", ")})`)).toEqual([]);
 }
 
-/** Loads the fictional sample so result pages have content, then navigates client-side. */
-async function openSample(page: Page) {
-  await page.goto("/");
-  await page.getByRole("button", { name: "View a sample profile" }).click();
-  await expect(page.getByRole("heading", { name: "Your career has equipped you with more than a job title." })).toBeVisible();
-}
 
 test.describe("accessibility (axe, WCAG 2.2 AA)", () => {
   test("landing", async ({ page }) => {
@@ -25,14 +19,15 @@ test.describe("accessibility (axe, WCAG 2.2 AA)", () => {
 
   test("discover and crossroads", async ({ page }) => {
     await page.goto("/discover");
-    await page.getByRole("button", { name: "Skip" }).click();
+    await axe(page); // the chapter opening
+    await beginChapter(page, 1);
     await axe(page);
     await page.getByRole("button", { name: /Operations, programmes/ }).click();
     await page.getByRole("button", { name: "Continue" }).click();
     await page.waitForTimeout(800);
     await axe(page);
     await page.goto("/crossroads");
-    await page.waitForTimeout(800);
+    await beginChapter(page, 2);
     await axe(page);
   });
 
@@ -44,6 +39,7 @@ test.describe("accessibility (axe, WCAG 2.2 AA)", () => {
     await axe(page);
     await page.getByRole("button", { name: "Next →" }).click();
     await page.getByRole("link", { name: "Explore and compare these pathways" }).click();
+    await beginChapter(page, 5);
     await expect(page.getByRole("heading", { name: "Three hypotheses, side by side." })).toBeVisible();
     await page.waitForTimeout(800);
     await axe(page);
@@ -51,6 +47,7 @@ test.describe("accessibility (axe, WCAG 2.2 AA)", () => {
     await expect(page.getByRole("heading", { name: "What your experience could make possible" })).toBeVisible();
     await axe(page);
     await page.getByRole("link", { name: "Start the first lesson" }).click();
+    await beginChapter(page, 7);
     await expect(page.getByRole("heading", { name: /Judging whether a career path/ })).toBeVisible();
     await axe(page);
   });
@@ -72,7 +69,7 @@ for (const vp of VIEWPORTS) {
     await page.waitForTimeout(600);
     await noHorizontalOverflow(page);
     await page.goto("/discover");
-    await page.getByRole("button", { name: "Skip" }).click();
+    await beginChapter(page, 1);
     await page.getByRole("button", { name: /Operations, programmes/ }).click();
     await page.getByRole("button", { name: "Continue" }).click();
     await expect(page.getByTestId("swipe-card")).toBeVisible();

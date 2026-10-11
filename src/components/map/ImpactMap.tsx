@@ -186,7 +186,7 @@ export function ImpactMap({
             const nodes = map.nodes.filter((n) => g.id.includes(n.group));
             return (
               <div key={g.title} className="flex flex-col">
-                <p className={`type-eyebrow ${onDark ? "text-brand-accent" : "text-brand-accent-text"} ${compact ? "text-[0.6875rem]" : ""}`}>
+                <p className={`type-eyebrow ${onDark ? "text-brand-accent-on-dark" : "text-brand-accent-text"} ${compact ? "text-[0.6875rem]" : ""}`}>
                   {g.short}
                 </p>
                 <p className={`mb-3 text-sm font-semibold ${muted}`}>{g.title}</p>
@@ -276,7 +276,7 @@ export function ImpactMap({
             {selectedNode ? (
               <div className={`rounded-[var(--radius-card)] p-5 sm:p-6 ${onDark ? "bg-white/[0.06] ring-1 ring-white/15" : "surface-card"}`}>
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className={`type-eyebrow ${onDark ? "text-brand-accent" : "text-brand-accent-text"}`}>{GROUP_NAME[selectedNode.group]}</span>
+                  <span className={`type-eyebrow ${onDark ? "text-brand-accent-on-dark" : "text-brand-accent-text"}`}>{GROUP_NAME[selectedNode.group]}</span>
                   {!selectedNode.hypothesis && <ConfidenceChip confidence={selectedNode.confidence} onDark={onDark} />}
                 </div>
                 <h3 className="mt-2 text-xl font-bold">{selectedNode.label}</h3>

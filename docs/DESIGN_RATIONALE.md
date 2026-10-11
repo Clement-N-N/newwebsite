@@ -35,7 +35,42 @@ that feels premium **and** earns trust by showing its reasoning.
 | Impact Passport (`/passport`) | Print-styled report, privacy-safe summary, data controls | Something useful to keep |
 | Learn (`/learn`) | Five short sections and one check | Continues into HIP's learning journey |
 
+## The immersive learning layer
+
+The assessment is framed as a seven-chapter learning journey (`src/lib/journey.ts`). Each chapter
+teaches one idea used to choose high-impact work, then applies it to the participant:
+
+| Chapter | Idea taught |
+| --- | --- |
+| 1 · What you bring | Career capital |
+| 2 · What you'd weigh | Trade-offs are information |
+| 3 · How it connects | Personal fit |
+| 4 · What it could mean | Hypotheses, not answers |
+| 5 · Where you could go | Three routes to impact |
+| 6 · What you take with you | Small, deliberate tests |
+| 7 · How to judge a path | Scale, neglectedness, tractability |
+
+* **Chapter openings** (`ChapterIntro`): a full-screen moment with the idea, the objective and the time
+  it takes. Shown once per chapter, focus-trapped, dismissed with one button or Escape.
+* **Journey rail** in the header: where you are, what's done and what you can jump to.
+* **Learning inside the flow:** a mid-deck insight card, neutral reflections in the crossroads, and a
+  lesson with hands-on tools (a problem-lens explorer, contribution routes linked to your ranking, a
+  ladder of cheap tests linked to your experiment).
+* **Your answers become visible:** each answer that adds a theme announces "New on your map", and the
+  live map grows beside the deck (in a sheet on phones).
+* **Impact Wrapped:** the reveal opens on a cover made from the participant's own themes, then plays as
+  story-style slides with optional auto-play, swipe and tap navigation on phones, per-slide atmosphere,
+  cards dealt in, and the three pathways fanned like a hand.
+
 ## Motion
+
+Values follow the `better-ui` guidance: staged entrances 100ms apart with opacity, 4px blur and a
+12px rise over 300ms; headlines read in word by word 80ms apart; exits are 150ms and smaller than
+entrances; buttons press to 0.96 over 150ms (never when disabled); springs have no bounce; transitions
+name their properties; one icon set (Lucide) with stroke matched to text weight. Surfaces use layered
+shadow rings with a transparent border for forced-colors mode, and dark chapters keep one light ring.
+The ambient "aurora" backdrop uses only tints of the brand blue and orange, is kept dim enough that every
+text token stays at AA contrast, and is static under reduced motion.
 
 Motion always does a job: the swipe card follows the finger and tilts; the next card rises from the
 stack; route changes fade up rather than hard-cut; the landing CTA opens into the assessment; map nodes

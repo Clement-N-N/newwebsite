@@ -1,21 +1,18 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import Link from "next/link";
+import { ArrowDown, ArrowRight, Check, Clock, Lock, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Button, buttonClass } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { track } from "@/lib/analytics";
-import { motionEmphasis } from "@/lib/design/motion";
+import { rise, stagger } from "@/lib/design/motion";
+import { CHAPTERS } from "@/lib/journey";
 import { useAssessment } from "@/lib/state/AssessmentProvider";
+import { Aurora } from "../fx/Aurora";
+import { WordReveal } from "../fx/WordReveal";
 import { MapMotif } from "./MapMotif";
-
-const STEPS = [
-  { n: "01", title: "Swipe Discovery", body: "Quick reactions to statements about your work and what drives you.", time: "4–5 min" },
-  { n: "02", title: "Career Crossroads", body: "Three realistic dilemmas that bring out your priorities and constraints.", time: "3–4 min" },
-  { n: "03", title: "Your Impact Map", body: "See how your strengths, motivations and possible pathways connect, and correct anything we got wrong.", time: "2 min" },
-  { n: "04", title: "Pathways and passport", body: "Three pathways to explore, the unknowns to check, and one experiment for the next seven days.", time: "3–5 min" },
-];
+import { ScrollStory } from "./ScrollStory";
 
 const OUTCOMES = [
   "A clearer picture of the strengths your work already shows",
@@ -40,7 +37,7 @@ export function LandingExperience() {
     track("assessment_started");
     setEntering(true);
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    window.setTimeout(() => router.push("/discover"), reduced ? 0 : 520);
+    window.setTimeout(() => router.push("/discover"), reduced ? 0 : 560);
   };
 
   const trySample = () => {
@@ -49,143 +46,137 @@ export function LandingExperience() {
   };
 
   return (
-    <>
-      <section className="relative isolate flex min-h-dvh items-center overflow-hidden bg-brand-primary text-brand-on-primary">
-        <div className="pointer-events-none absolute inset-y-0 right-0 -z-10 hidden w-[40%] opacity-80 lg:block">
+    <div className="relative isolate bg-brand-primary text-brand-on-primary">
+      <Aurora tone="primary" className="!fixed" />
+
+      <section className="relative flex min-h-dvh items-center overflow-hidden">
+        <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[42%] opacity-80 lg:block" aria-hidden>
           <div className="absolute inset-0 flex items-center pr-8">
             <MapMotif />
           </div>
         </div>
-        <div className="container-page pb-16 pt-28">
-          <motion.p
-            className="type-eyebrow text-brand-accent"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={motionEmphasis}
-          >
-            Impact Start
+        <motion.div className="container-page pb-20 pt-28" initial="hidden" animate="visible" variants={stagger}>
+          <motion.p variants={rise} className="type-eyebrow flex items-center gap-2 text-brand-accent-on-dark">
+            <Sparkles size={16} strokeWidth={2} absoluteStrokeWidth aria-hidden /> Impact Start
           </motion.p>
-          <motion.h1
-            className="type-display mt-5 max-w-[13ch] lg:max-w-[11.5ch]"
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ ...motionEmphasis, delay: 0.08 }}
-          >
-            What could your experience{" "}
-            <span className="relative inline-block whitespace-nowrap">
-              make possible?
-              <svg aria-hidden viewBox="0 0 300 16" preserveAspectRatio="none" className="absolute -bottom-2 left-0 h-3 w-full sm:-bottom-3 sm:h-4">
-                <motion.path
-                  d="M2 11 C 80 3, 200 3, 298 9"
-                  fill="none"
-                  stroke="var(--brand-accent)"
-                  strokeWidth="5"
-                  strokeLinecap="round"
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 0.9, delay: 0.7, ease: "easeInOut" }}
-                />
-              </svg>
-            </span>
-          </motion.h1>
-          <motion.p
-            className="type-lede mt-8 max-w-xl text-brand-on-primary-muted"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ ...motionEmphasis, delay: 0.2 }}
-          >
+          <WordReveal
+            text="What could your experience make possible?"
+            highlight={["possible?"]}
+            className="type-display mt-6 max-w-[13ch] lg:max-w-[11.5ch]"
+            delay={0.15}
+          />
+          <motion.p variants={rise} className="type-lede mt-8 max-w-xl text-brand-on-primary-muted" transition={{ delay: 0.7 }}>
             You&apos;ve spent years building skills, knowledge and relationships. Let&apos;s explore where they could make a meaningful
             difference.
           </motion.p>
-          <motion.div
-            className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ ...motionEmphasis, delay: 0.3 }}
-          >
-            <Button size="lg" onClick={begin}>
+          <motion.div variants={rise} className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <Button size="lg" onClick={begin} className="ps-6 pe-5">
               {hasProgress ? "Continue where you left off" : "Discover your impact pathways"}
-              <svg aria-hidden width="20" height="20" viewBox="0 0 20 20">
-                <path d="M4 10h11m-4-5 5 5-5 5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+              <ArrowRight size={20} strokeWidth={2} absoluteStrokeWidth aria-hidden />
             </Button>
-            <a href="#how" className={buttonClass("onDarkGhost", "lg")}>
-              See how it works
+            <a
+              href="#how"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[var(--radius-button)] px-5 py-3.5 font-semibold shadow-[var(--shadow-on-dark)] transition-[background-color,scale] duration-150 ease-out hover:bg-white/10 active:scale-[0.96] sm:text-lg"
+            >
+              See how it works <ArrowDown size={18} strokeWidth={2} absoluteStrokeWidth aria-hidden />
             </a>
           </motion.div>
-          <motion.ul
-            className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-brand-on-primary-muted"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ ...motionEmphasis, delay: 0.45 }}
-          >
-            {["About 10–15 minutes", "Free to explore", "Personalised insights"].map((t) => (
+          <motion.ul variants={rise} className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-brand-on-primary-muted">
+            {[
+              { icon: Clock, t: "About 10–15 minutes" },
+              { icon: Check, t: "Free to explore" },
+              { icon: Lock, t: "Personalised, and private by default" },
+            ].map(({ icon: Icon, t }) => (
               <li key={t} className="flex items-center gap-2">
-                <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-brand-accent" />
+                <Icon size={16} strokeWidth={1.5} absoluteStrokeWidth className="text-brand-accent-on-dark" aria-hidden />
                 {t}
               </li>
             ))}
           </motion.ul>
+        </motion.div>
+      </section>
+
+      <ScrollStory />
+
+      <section className="relative py-24 sm:py-32" aria-labelledby="chapters-title">
+        <div className="container-page">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-15%" }} variants={stagger}>
+            <motion.p variants={rise} className="type-eyebrow text-brand-accent-on-dark">
+              An immersive learning journey
+            </motion.p>
+            <motion.h2 variants={rise} id="chapters-title" className="type-h1 mt-3 max-w-3xl">
+              Seven chapters. One idea in each.
+            </motion.h2>
+            <motion.p variants={rise} className="type-lede mt-4 max-w-2xl text-brand-on-primary-muted">
+              Every step teaches a concept people use to choose high-impact work, then applies it to you.
+            </motion.p>
+          </motion.div>
+          <motion.ol
+            className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-10%" }}
+            variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
+          >
+            {CHAPTERS.map((c) => (
+              <motion.li key={c.id} variants={rise} className="surface-dark group flex flex-col p-5 transition-[box-shadow] duration-150 hover:shadow-[var(--shadow-on-dark-hover)]">
+                <span className="font-display text-4xl font-extrabold leading-none text-transparent [-webkit-text-stroke:1.5px_var(--brand-accent)]">
+                  {String(c.n).padStart(2, "0")}
+                </span>
+                <h3 className="mt-4 text-lg font-bold">{c.title}</h3>
+                <p className="mt-1 text-sm text-brand-on-primary-muted">
+                  <span className="font-semibold text-brand-on-primary">{c.concept}.</span> {c.stage}
+                </p>
+              </motion.li>
+            ))}
+            <motion.li variants={rise} className="flex flex-col justify-between rounded-[var(--radius-card)] bg-brand-accent p-5 text-brand-primary">
+              <p className="text-lg font-bold">Ready when you are.</p>
+              <button type="button" onClick={begin} className="mt-6 inline-flex min-h-11 items-center gap-2 self-start font-bold underline underline-offset-4">
+                Start chapter 1 <ArrowRight size={18} strokeWidth={2.5} absoluteStrokeWidth aria-hidden />
+              </button>
+            </motion.li>
+          </motion.ol>
         </div>
       </section>
 
-      <section id="how" className="scroll-mt-16 bg-brand-background py-20 sm:py-28">
-        <div className="container-page">
-          <p className="type-eyebrow text-brand-accent-text">How it works</p>
-          <h2 className="type-h1 mt-3 max-w-2xl text-brand-primary">A short, honest look at where your experience could take you.</h2>
-          <ol className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {STEPS.map((s) => (
-              <li key={s.n} className="surface-card flex flex-col p-6">
-                <span className="font-display text-3xl font-extrabold text-brand-accent-text">{s.n}</span>
-                <h3 className="mt-4 text-xl font-bold text-brand-primary">{s.title}</h3>
-                <p className="mt-2 flex-1 text-brand-muted">{s.body}</p>
-                <p className="mt-4 text-sm font-semibold text-brand-muted">{s.time}</p>
-              </li>
-            ))}
-          </ol>
-
-          <div className="mt-20 grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
-            <div>
-              <h2 className="type-h2 text-brand-primary">What you&apos;ll leave with</h2>
-              <ul className="mt-6 grid gap-3">
-                {OUTCOMES.map((o) => (
-                  <li key={o} className="flex gap-3">
-                    <svg aria-hidden className="mt-1 shrink-0 text-brand-success" width="20" height="20" viewBox="0 0 20 20">
-                      <path d="m4 10.5 4 4 8-9" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                    <span>{o}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="rounded-[var(--radius-card)] bg-brand-primary-soft p-6 sm:p-8">
-              <h2 className="text-xl font-bold text-brand-primary">What this is, and isn&apos;t</h2>
-              <p className="mt-3 text-brand-muted">
-                Impact Start is a discovery tool, not a personality test. It won&apos;t tell you your purpose or score your potential.
-                It reflects your answers back, suggests hypotheses worth testing, and shows its reasoning so you can disagree with it.
-              </p>
-              <h3 className="mt-6 font-bold text-brand-primary">Your answers</h3>
-              <p className="mt-2 text-brand-muted">
-                Your answers stay in this browser tab and disappear when you close it, unless you choose to remember them on this
-                device. If AI-assisted wording is switched on, your answers are sent to Anthropic&apos;s API to word your results.
-                Impact Start does not store them on a server.
-              </p>
-            </div>
+      <section className="relative bg-brand-background py-24 text-brand-text sm:py-28">
+        <div className="container-page grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+          <div>
+            <h2 className="type-h2 text-brand-primary">What you&apos;ll leave with</h2>
+            <ul className="mt-6 grid gap-3">
+              {OUTCOMES.map((o) => (
+                <li key={o} className="flex gap-3">
+                  <Check size={20} strokeWidth={2} absoluteStrokeWidth className="mt-1 shrink-0 text-brand-success" aria-hidden />
+                  <span>{o}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-
-          <div className="mt-16 flex flex-col items-start gap-4 border-t border-brand-border pt-10 sm:flex-row sm:items-center sm:justify-between">
-            <p className="max-w-xl text-brand-muted">
-              Reviewing this as a prototype? You can jump straight to the results for a{" "}
-              <strong className="text-brand-text">fictional sample participant</strong>.
+          <div className="rounded-[var(--radius-card)] bg-brand-primary-soft p-6 sm:p-8">
+            <h2 className="text-xl font-bold text-brand-primary">What this is, and isn&apos;t</h2>
+            <p className="mt-3 text-brand-muted">
+              Impact Start is a discovery tool, not a personality test. It won&apos;t tell you your purpose or score your potential. It
+              reflects your answers back, suggests hypotheses worth testing, and shows its reasoning so you can disagree with it.
             </p>
-            <div className="flex flex-wrap gap-3">
-              <Button variant="ghost" onClick={trySample}>
-                View a sample profile
-              </Button>
-              <Button variant="secondary" onClick={begin}>
-                Start the assessment
-              </Button>
-            </div>
+            <h3 className="mt-6 font-bold text-brand-primary">Your answers</h3>
+            <p className="mt-2 text-brand-muted">
+              Your answers stay in this browser tab and disappear when you close it, unless you choose to remember them on this device. If
+              AI-assisted wording is switched on, your answers are sent to Anthropic&apos;s API to word your results. Impact Start does not
+              store them on a server.
+            </p>
+          </div>
+        </div>
+        <div className="container-page mt-16 flex flex-col items-start gap-4 border-t border-brand-border pt-10 sm:flex-row sm:items-center sm:justify-between">
+          <p className="max-w-xl text-brand-muted">
+            Reviewing this as a prototype? Jump straight to the results for a <strong className="text-brand-text">fictional sample participant</strong>.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Button variant="ghost" onClick={trySample}>
+              View a sample profile
+            </Button>
+            <Button variant="secondary" onClick={begin}>
+              Start the assessment
+            </Button>
           </div>
         </div>
       </section>
@@ -194,16 +185,13 @@ export function LandingExperience() {
         {entering && (
           <motion.div
             aria-hidden
-            className="fixed inset-0 z-40 bg-brand-surface"
-            initial={{ clipPath: "circle(0% at 50% 70%)" }}
-            animate={{ clipPath: "circle(150% at 50% 70%)" }}
+            className="fixed inset-0 z-40 bg-brand-primary-deep"
+            initial={{ clipPath: "circle(0% at 50% 60%)" }}
+            animate={{ clipPath: "circle(150% at 50% 60%)" }}
             transition={{ duration: 0.55, ease: [0.65, 0, 0.35, 1] }}
           />
         )}
       </AnimatePresence>
-      <Link href="/discover" className="sr-only">
-        Go to the assessment
-      </Link>
-    </>
+    </div>
   );
 }

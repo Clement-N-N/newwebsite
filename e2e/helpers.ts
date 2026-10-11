@@ -4,8 +4,7 @@ export async function startAssessment(page: Page) {
   await page.goto("/");
   await page.getByRole("button", { name: "Discover your impact pathways" }).click();
   await page.waitForURL("**/discover");
-  await expect(page.getByRole("dialog", { name: "How this works" })).toBeVisible();
-  await page.getByRole("button", { name: "Skip" }).click();
+  await beginChapter(page, 1);
 }
 
 /** Answers Part 1 with buttons and keys. Returns once on the crossroads page. */
@@ -19,6 +18,11 @@ export async function completeDiscover(page: Page, { useKeys = false } = {}) {
     await expect(page.getByRole("group", { name: new RegExp(`Statement ${i + 1} of 8`) })).toBeVisible();
     if (useKeys) await page.keyboard.press(keys[answers[i]]);
     else await page.getByRole("button", { name: answers[i], exact: true }).click();
+    if (i === 3) {
+      // Halfway, the deck pauses for a short insight.
+      await expect(page.getByRole("heading", { name: /Your map already shows/ })).toBeVisible();
+      await page.getByRole("button", { name: "Keep going" }).click();
+    }
   }
 
   await expect(page.getByRole("heading", { name: /Which problems/ })).toBeVisible();
@@ -34,7 +38,25 @@ export async function completeDiscover(page: Page, { useKeys = false } = {}) {
   await page.waitForURL("**/crossroads");
 }
 
+/** Each chapter opens with a full-screen introduction. */
+export async function beginChapter(page: Page, n: number) {
+  const button = page.getByRole("button", { name: `Begin chapter ${n}` });
+  await expect(button).toBeVisible();
+  await button.click();
+  await expect(button).toBeHidden();
+}
+
+/** Loads the fictional sample, then plays past the cover to the first slide. */
+export async function openSample(page: Page) {
+  await page.goto("/");
+  await page.getByRole("button", { name: "View a sample profile" }).click();
+  await expect(page.getByRole("heading", { name: "Here's what your experience could make possible." })).toBeVisible();
+  await page.getByRole("button", { name: "Play your results" }).click();
+  await expect(page.getByRole("heading", { name: "Your career has equipped you with more than a job title." })).toBeVisible();
+}
+
 export async function completeCrossroads(page: Page) {
+  await beginChapter(page, 2);
   const picks = [["How effective the programme's work actually is", "Whether my financial commitments would stay manageable"], ["Strengthening the organisations doing that work"], ["A small, time-boxed exploration project"]];
   for (let i = 0; i < picks.length; i++) {
     await expect(page.getByText(`Crossroads ${i + 1} of 3`)).toBeVisible();
@@ -44,6 +66,7 @@ export async function completeCrossroads(page: Page) {
     await page.getByRole("button", { name: i === 2 ? "See your Impact Map" : "Next crossroads" }).click();
   }
   await page.waitForURL("**/impact-map");
+  await beginChapter(page, 3);
 }
 
 export async function noHorizontalOverflow(page: Page) {
