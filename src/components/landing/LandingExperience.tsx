@@ -89,6 +89,10 @@ export function LandingExperience() {
               </li>
             ))}
           </motion.ul>
+          <motion.p variants={rise} className="mt-6 text-sm text-brand-on-primary-muted">
+            Built by <span className="font-semibold text-brand-on-primary">Clement Ngosong</span> as a concept for HIP&apos;s Program Launch Lead
+            role.
+          </motion.p>
         </motion.div>
         <div className="hidden lg:block">
           <HeroTiles />

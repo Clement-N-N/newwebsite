@@ -11,6 +11,8 @@ const body = Source_Sans_3({ variable: "--font-body", subsets: ["latin"] });
 const heading = Montserrat({ variable: "--font-heading", subsets: ["latin"], weight: ["600", "700", "800"] });
 
 export const metadata: Metadata = {
+  authors: [{ name: "Clement Ngosong" }],
+  creator: "Clement Ngosong",
   title: { default: "Impact Career Compass · Discover what your experience could make possible", template: "%s · Impact Career Compass" },
   description:
     "An independent concept prototype: an interactive career-impact discovery experience for experienced professionals, created for a High Impact Professionals job application.",

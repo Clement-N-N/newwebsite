@@ -6,7 +6,10 @@ export function ConceptNotice() {
           <strong className="text-brand-text">Impact Career Compass is an independent concept</strong> created for a job application to High
           Impact Professionals. It is not an official HIP product, and using it does not enrol you in any HIP programme.
         </p>
-        <p className="shrink-0">Brand values are provisional.</p>
+        <p className="shrink-0 sm:text-right">
+          Built by <strong className="text-brand-text">Clement Ngosong</strong>
+          <span className="block text-xs">Brand values are provisional.</span>
+        </p>
       </div>
     </footer>
   );

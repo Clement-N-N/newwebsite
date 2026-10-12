@@ -6,6 +6,8 @@ An interactive, evidence-linked career-impact discovery experience for experienc
 an **independent concept prototype** created for the Program Launch Lead / Director application at
 High Impact Professionals (HIP), not an official HIP product.
 
+Built by **Clement Ngosong**.
+
 * **Product walkthrough:** [docs/WALKTHROUGH.md](docs/WALKTHROUGH.md)
 * **Brand audit (values sampled from HIP's site):** [docs/BRAND_AUDIT.md](docs/BRAND_AUDIT.md)
 * **Impact Compass alignment:** [docs/IMPACT_COMPASS_ALIGNMENT.md](docs/IMPACT_COMPASS_ALIGNMENT.md)

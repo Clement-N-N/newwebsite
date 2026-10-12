@@ -20,7 +20,7 @@ export function privacySafeSummary(report: Report, experimentTitle: string) {
     `Pathways I'm exploring: ${report.pathways.map((p) => p.title).join("; ")}`,
     `This week's experiment: ${experimentTitle}`,
     "",
-    "Impact Career Compass is an independent concept prototype, not an official High Impact Professionals product.",
+    "Impact Career Compass is an independent concept prototype built by Clement Ngosong, not an official High Impact Professionals product.",
   ].join("\n");
 }
 
@@ -295,7 +295,7 @@ export function ImpactPassport() {
             </section>
 
             <footer className="border-t border-brand-border pt-4 text-xs text-brand-muted">
-              Impact Career Compass is an independent concept prototype created for a job application. It is not an official High Impact Professionals
+              Impact Career Compass is an independent concept prototype built by Clement Ngosong for a job application. It is not an official High Impact Professionals
               product. Results come from your answers and a curated pathway library ({r.meta.libraryVersion}, {r.meta.engineVersion}). They are
               hypotheses to test, not predictions.
             </footer>
