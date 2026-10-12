@@ -1,6 +1,6 @@
 # Test results
 
-Run on 11 October 2026 against a production build (`next build` + `next start`), in Playwright
+Run on 12 October 2026 against a production build (`next build` + `next start`), in Playwright
 1.56.1's bundled Chromium. Re-run with the commands in the README.
 
 | Check | Result |
@@ -8,7 +8,7 @@ Run on 11 October 2026 against a production build (`next build` + `next start`),
 | TypeScript (`npm run typecheck`) | Pass, no errors |
 | ESLint (`npm run lint`) | Pass, no warnings |
 | Production build (`npm run build`) | Pass |
-| Unit and component tests (`npm test`) | **29 passed** |
+| Unit and component tests (`npm test`) | **33 passed** |
 | End-to-end tests (`npm run test:e2e`) | **25 passed**, 9 skipped by design (desktop-only or mobile-only cases on the other project) |
 
 Accessibility: axe-core checks (WCAG 2.0, 2.1 and 2.2 AA tags) on the landing page, discovery, crossroads,
@@ -41,15 +41,19 @@ landing, discovery or results), plus the full journey on a Pixel 7 profile.
 ✓ src/lib/engine/__tests__/engine.test.ts > buildReport > quotes the participant's own words verbatim
 ✓ src/lib/engine/__tests__/engine.test.ts > buildReport > uses the selected pathway's experiment
 ✓ src/lib/engine/__tests__/engine.test.ts > buildReport > refuses to build results from an incomplete assessment
-✓ src/lib/engine/__tests__/engine.test.ts > buildReport > never shows numeric scores or percentages to participants
+✓ src/lib/engine/__tests__/engine.test.ts > buildReport > never shows percentages, and every 0–3 rating carries a plain-language label
+✓ src/lib/engine/__tests__/engine.test.ts > buildReport > follows the Impact Compass report structure
+✓ src/lib/engine/__tests__/engine.test.ts > buildReport > personalises the headline from demonstrated capabilities
+✓ src/lib/engine/__tests__/engine.test.ts > buildReport > gives a weekly plan when time is the constraint, and a daily plan otherwise
+✓ src/lib/engine/__tests__/engine.test.ts > buildReport > does not recommend a career switch first to someone staying in their role
 ✓ src/lib/engine/__tests__/engine.test.ts > validateReport > flags unsupported claims, invented figures and unknown sources
 ✓ src/lib/engine/__tests__/engine.test.ts > validateReport > flags evidence that cites an unanswered question
 ✓ src/lib/engine/__tests__/engine.test.ts > validateReport > rejects structurally invalid reports
+✓ src/components/__tests__/DiscoverFlow.test.tsx > DiscoverFlow > records swipe answers from buttons and arrow keys, and lets people go back and revise
+✓ src/components/__tests__/DiscoverFlow.test.tsx > DiscoverFlow > does not let arrow keys answer while focus is in another control
 ✓ src/lib/__tests__/analytics.test.ts > analytics > drops answer content and any non-allowlisted property
 ✓ src/lib/__tests__/analytics.test.ts > analytics > stamps every event with question, engine, library and prompt versions
 ✓ src/lib/__tests__/analytics.test.ts > privacySafeSummary > contains no free-text answers
-✓ src/components/__tests__/DiscoverFlow.test.tsx > DiscoverFlow > records swipe answers from buttons and arrow keys, and lets people go back and revise
-✓ src/components/__tests__/DiscoverFlow.test.tsx > DiscoverFlow > does not let arrow keys answer while focus is in another control
 ```
 
 ## End-to-end tests

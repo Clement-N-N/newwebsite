@@ -18,7 +18,7 @@ describe("analytics", () => {
     expect(e.name).toBe("question_answered");
     expect(e.versions.questions).toBe(QUESTION_BANK_VERSION);
     expect(e.versions.engine).toMatch(/^engine-/);
-    expect(e.versions.prompt).toMatch(/^narrative-/);
+    expect(e.versions.prompt).toMatch(/^impact-compass-/);
   });
 });
 

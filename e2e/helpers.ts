@@ -52,7 +52,7 @@ export async function openSample(page: Page) {
   await page.getByRole("button", { name: "View a sample profile" }).click();
   await expect(page.getByRole("heading", { name: "Here's what your experience could make possible." })).toBeVisible();
   await page.getByRole("button", { name: "Play your results" }).click();
-  await expect(page.getByRole("heading", { name: "Your career has equipped you with more than a job title." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /experience may travel further than you think\.$/ })).toBeVisible();
 }
 
 export async function completeCrossroads(page: Page) {

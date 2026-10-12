@@ -392,7 +392,7 @@ export function LearningContinuation() {
                 </div>
               </motion.div>
               <motion.p variants={rise} className="mt-4 max-w-2xl text-brand-muted">
-                These are High Impact Professionals&apos; own resources. Impact Start can&apos;t enrol you in anything or add you to the Talent
+                These are High Impact Professionals&apos; own resources. Impact Career Compass can&apos;t enrol you in anything or add you to the Talent
                 Directory. You choose whether to take those steps.
               </motion.p>
               <motion.ul variants={rise} className="mt-6 grid gap-3 sm:grid-cols-3">

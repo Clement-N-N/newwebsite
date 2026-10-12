@@ -24,7 +24,7 @@ test("a participant completes the whole journey", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Here's what your experience could make possible." })).toBeVisible();
   await expect(page.getByText(/No AI was used/)).toBeVisible();
   await page.getByRole("button", { name: "Play your results" }).click();
-  await expect(page.getByRole("heading", { name: "Your career has equipped you with more than a job title." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /experience may travel further than you think\.$/ })).toBeVisible();
   await expect(page.getByText(/supplier onboarding/)).toBeVisible();
 
   const headings = [
@@ -32,14 +32,16 @@ test("a participant completes the whole journey", async ({ page }) => {
     "These are the problems and contributions that seem to matter to you.",
     "How your capabilities, motivations and possible pathways connect.",
     "Your experience may open doors you haven't explored.",
+    "Every path asks something different of you.",
     "Good decisions begin with better questions.",
     "You don't need to decide your future today. You can test a possibility.",
+    "One lesson, one question, and the next step is yours.",
   ];
   for (const h of headings) {
     await page.getByRole("button", { name: "Next →" }).click();
     await expect(page.getByRole("heading", { name: h })).toBeVisible();
   }
-  await expect(page.getByText("Your seven-day experiment")).toBeVisible();
+  await expect(page.getByText("A question to sit with")).toBeVisible();
 
   // Pathways: open, compare, save, choose, reject.
   await page.getByRole("link", { name: "Explore your pathways" }).click();
@@ -51,10 +53,12 @@ test("a participant completes the whole journey", async ({ page }) => {
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByText("Assumptions to check")).toBeVisible();
   await expect(dialog.getByText(/Low-cost experiment/)).toBeVisible();
+  await expect(dialog.getByText("Decision rule")).toBeVisible();
+  await expect(dialog.getByText("What would change this view")).toBeVisible();
   await dialog.getByRole("button", { name: "Close" }).click();
 
   await page.getByRole("button", { name: "Compare side by side" }).click();
-  await expect(page.getByRole("table")).toContainText("Demonstrated skill fit");
+  await expect(page.getByRole("table")).toContainText("Skill fit");
 
   await cards.nth(1).getByRole("button", { name: /Save/ }).click();
   await expect(cards.nth(1).getByRole("button", { name: /Saved/ })).toBeVisible();
@@ -63,7 +67,7 @@ test("a participant completes the whole journey", async ({ page }) => {
 
   const thirdTitle = await cards.nth(2).getByRole("heading").textContent();
   await cards.nth(2).getByRole("button", { name: "Not for me" }).click();
-  await page.getByLabel("It isn't feasible for me right now").check();
+  await page.getByLabel("It doesn't work for me financially").check();
   await page.getByRole("button", { name: "Set aside and replace" }).click();
   await expect(page.getByRole("heading", { name: "Set aside" })).toBeVisible();
   await expect(cards).toHaveCount(3);
@@ -73,7 +77,18 @@ test("a participant completes the whole journey", async ({ page }) => {
   await page.getByRole("link", { name: "Open your Impact Passport" }).first().click();
   await page.waitForURL("**/passport");
   await expect(page.getByRole("heading", { name: "What your experience could make possible" })).toBeVisible();
-  for (const s of ["Professional summary", "Demonstrated capabilities", "Three career-impact hypotheses", "Your seven-day experiment", "Next learning steps"]) {
+  const sections = [
+    "1 · Your impact discovery",
+    "2 · Your professional capital",
+    "3 · What drives you",
+    "4 · Opportunities worth exploring",
+    "5 · Important trade-offs",
+    "6 · Key unknowns",
+    "7 · Your seven-day experiment",
+    "8 · Your next learning step",
+    "9 · A question to reflect on",
+  ];
+  for (const s of sections) {
     await expect(page.getByRole("heading", { name: s })).toBeVisible();
   }
   await page.evaluate(() => {
@@ -180,7 +195,7 @@ test.describe("reduced motion", () => {
     await page.getByRole("link", { name: "Reveal your results" }).click();
     await expect(page.getByRole("heading", { name: "Here's what your experience could make possible." })).toBeVisible();
     await page.keyboard.press("ArrowRight");
-    await expect(page.getByRole("heading", { name: "Your career has equipped you with more than a job title." })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /experience may travel further than you think\.$/ })).toBeVisible();
     await page.keyboard.press("ArrowRight");
     await expect(page.getByRole("heading", { name: "Here are the capabilities that keep showing up in your work." })).toBeVisible();
   });

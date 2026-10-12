@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Aurora } from "../fx/Aurora";
 import { track } from "@/lib/analytics";
+import { buildPlan } from "@/lib/engine/report";
 import type { Report } from "@/lib/engine/schema";
 import { useEnsureReport } from "@/lib/hooks/useEnsureReport";
 import { SOURCES, isSourceId } from "@/lib/knowledge/sources";
@@ -13,13 +14,13 @@ import { ConfidenceChip } from "../ui/Chip";
 /** Shareable text deliberately omits free-text answers and individual responses. */
 export function privacySafeSummary(report: Report, experimentTitle: string) {
   return [
-    "My Impact Start summary",
+    "My Impact Career Compass summary",
     "",
     `Strengths: ${report.strengths.map((s) => s.label).join(", ")}`,
     `Pathways I'm exploring: ${report.pathways.map((p) => p.title).join("; ")}`,
     `This week's experiment: ${experimentTitle}`,
     "",
-    "Impact Start is an independent concept prototype, not an official High Impact Professionals product.",
+    "Impact Career Compass is an independent concept prototype, not an official High Impact Professionals product.",
   ].join("\n");
 }
 
@@ -58,6 +59,8 @@ export function ImpactPassport() {
   const r = shown;
   const chosen = r.pathways.find((p) => p.id === a.selectedPathwayId) ?? r.pathways[0];
   const notes = Object.entries(a.responses).flatMap(([id, ans]) => (ans.type === "scenario" && ans.note ? [{ id, note: ans.note }] : []));
+  const plan = chosen.id === r.experiment.pathwayId ? r.plan : buildPlan(chosen.experiment, chosen.title, r.plan.mode === "weekly");
+  const followOn = r.learning.followOn && isSourceId(r.learning.followOn) ? SOURCES[r.learning.followOn] : null;
   const date = new Date(r.meta.generatedAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
 
   const download = () => {
@@ -103,7 +106,7 @@ export function ImpactPassport() {
             <div className="no-print">
               <Aurora tone="warm" />
             </div>
-            <p className="type-eyebrow text-brand-accent print:text-brand-accent-text">Impact Start · Impact Passport</p>
+            <p className="type-eyebrow text-brand-accent print:text-brand-accent-text">Impact Career Compass · Impact Passport</p>
             <h1 className="type-h1 mt-3">What your experience could make possible</h1>
             <p className="mt-3 text-brand-on-primary-muted print:text-brand-muted">Prepared {date}. Hypotheses to explore, not conclusions.</p>
           </header>
@@ -114,7 +117,9 @@ export function ImpactPassport() {
             </div>
 
             <section className="print-break">
-              <h2 className={h2}>Professional summary</h2>
+              <h2 className={h2}>1 · Your impact discovery</h2>
+              <p className="type-h2 mt-2 text-brand-primary">{r.story.headline}</p>
+              <p className="mt-2 text-brand-muted">{r.story.discovery}</p>
               <div className="mt-3 space-y-2 text-lg">
                 {r.story.paragraphs.map((p, i) => (
                   <p key={i}>{p.text}</p>
@@ -123,7 +128,7 @@ export function ImpactPassport() {
             </section>
 
             <section className="print-break">
-              <h2 className={h2}>Demonstrated capabilities</h2>
+              <h2 className={h2}>2 · Your professional capital</h2>
               <ul className="mt-4 grid gap-4 sm:grid-cols-2">
                 {r.strengths.map((s) => (
                   <li key={s.id} className="rounded-xl border border-brand-border p-4">
@@ -132,6 +137,12 @@ export function ImpactPassport() {
                       <ConfidenceChip confidence={s.confidence} />
                     </div>
                     <p className="mt-2 text-sm text-brand-muted">{s.description}</p>
+                    {s.transfer && (
+                      <p className="mt-2 text-sm">
+                        <strong>Why it travels:</strong> {s.transfer}
+                      </p>
+                    )}
+                    {s.evidenceType && <p className="mt-2 text-xs font-semibold text-brand-muted">{s.evidenceType}</p>}
                   </li>
                 ))}
               </ul>
@@ -139,7 +150,7 @@ export function ImpactPassport() {
 
             <section className="print-break grid gap-8 sm:grid-cols-2">
               <div>
-                <h2 className={h2}>Motivational themes</h2>
+                <h2 className={h2}>3 · What drives you</h2>
                 <ul className="mt-3 space-y-2">
                   {r.motivations.map((m) => (
                     <li key={m.id}>
@@ -162,7 +173,7 @@ export function ImpactPassport() {
             </section>
 
             <section>
-              <h2 className={h2}>Three career-impact hypotheses</h2>
+              <h2 className={h2}>4 · Opportunities worth exploring</h2>
               <ol className="mt-4 space-y-4">
                 {r.pathways.map((p, i) => (
                   <li key={p.id} className="print-break rounded-xl border border-brand-border p-5">
@@ -174,8 +185,17 @@ export function ImpactPassport() {
                     <h3 className="mt-1 text-xl font-bold text-brand-primary">{p.title}</h3>
                     <p className="mt-2">{p.why.text}</p>
                     <p className="mt-3 text-sm">
-                      <strong>Skill fit:</strong> {p.fit.skill} · <strong>Feasibility now:</strong> {p.fit.feasibility} ·{" "}
-                      <strong>Learning:</strong> {p.fit.learning}
+                      <strong>Priority:</strong> {p.fit.priority}. {p.fit.priorityReason}
+                    </p>
+                    <p className="mt-1 text-sm">
+                      <strong>Skill fit:</strong> {p.fit.skill.label} · <strong>Motivation:</strong> {p.fit.motivation.label} ·{" "}
+                      <strong>Feasibility now:</strong> {p.fit.feasibility.label} · <strong>Evidence for the opportunity:</strong> {p.fit.evidence}
+                    </p>
+                    <p className="mt-1 text-sm text-brand-muted">
+                      <strong className="text-brand-text">Compared with what would happen anyway:</strong> {p.counterfactual}
+                    </p>
+                    <p className="mt-1 text-sm text-brand-muted">
+                      <strong className="text-brand-text">What would change this view:</strong> {p.reviseIf}
                     </p>
                     <p className="mt-2 text-sm text-brand-muted">
                       <strong className="text-brand-text">Check first:</strong> {[...p.uncertainties, ...p.assumptions].slice(0, 2).join(" ")}
@@ -185,8 +205,22 @@ export function ImpactPassport() {
               </ol>
             </section>
 
+            {r.tradeoffs.length > 0 && (
+              <section className="print-break">
+                <h2 className={h2}>5 · Important trade-offs</h2>
+                <dl className="mt-3 space-y-3">
+                  {r.tradeoffs.map((t) => (
+                    <div key={t.dimension}>
+                      <dt className="font-semibold">{t.dimension}</dt>
+                      <dd className="text-brand-muted">{t.text}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </section>
+            )}
+
             <section className="print-break">
-              <h2 className={h2}>Important unknowns</h2>
+              <h2 className={h2}>6 · Key unknowns</h2>
               <ul className="mt-3 list-disc space-y-2 pl-5">
                 {r.unknowns.map((u, i) => (
                   <li key={i}>{u.text}</li>
@@ -205,25 +239,41 @@ export function ImpactPassport() {
             </section>
 
             <section className="print-break rounded-xl bg-brand-primary-soft p-6">
-              <h2 className={h2}>Your seven-day experiment</h2>
+              <h2 className={h2}>7 · Your seven-day experiment</h2>
               <h3 className="type-h2 mt-2 text-brand-primary">{chosen.experiment.title}</h3>
               <p className="mt-1 text-brand-muted">To test: {chosen.title}</p>
+              <p className="mt-3">
+                <strong>Hypothesis:</strong> {chosen.experiment.hypothesis}
+              </p>
               <ol className="mt-4 space-y-2">
-                {chosen.experiment.steps.map((s, i) => (
-                  <li key={s} className="flex gap-3">
+                {plan.steps.map((s) => (
+                  <li key={s.when} className="flex gap-3">
                     <span aria-hidden className="mt-0.5 h-5 w-5 shrink-0 rounded border-[1.5px] border-brand-primary" />
                     <span>
-                      <span className="sr-only">Step {i + 1}: </span>
-                      {s}
+                      <strong>{s.when}:</strong> {s.task}
                     </span>
                   </li>
                 ))}
               </ol>
+              <p className="mt-4 text-sm">
+                <strong>Effort:</strong> {chosen.experiment.effort} · <strong>Decision rule:</strong> {chosen.experiment.decisionRule}
+              </p>
             </section>
 
             <section className="print-break">
-              <h2 className={h2}>Next learning steps</h2>
-              <ul className="mt-3 space-y-2">
+              <h2 className={h2}>8 · Your next learning step</h2>
+              <p className="mt-3 font-semibold">{r.learning.lesson}</p>
+              <p className="text-brand-muted">{r.learning.why}</p>
+              {followOn && (
+                <p className="mt-2 text-sm">
+                  Then:{" "}
+                  <a href={followOn.url} target="_blank" rel="noreferrer" className="font-semibold text-brand-info underline underline-offset-2">
+                    {followOn.publisher}: {followOn.title}
+                  </a>
+                </p>
+              )}
+              <h3 className="mt-5 font-bold">Further reading</h3>
+              <ul className="mt-2 space-y-2">
                 {r.nextSteps.map((n) => (
                   <li key={n.sourceId}>
                     {isSourceId(n.sourceId) ? (
@@ -239,8 +289,13 @@ export function ImpactPassport() {
               </ul>
             </section>
 
+            <section className="print-break rounded-xl border-l-4 border-brand-accent bg-brand-surface p-6">
+              <h2 className={h2}>9 · A question to reflect on</h2>
+              <p className="type-h2 mt-2 text-brand-primary">{r.reflectiveQuestion}</p>
+            </section>
+
             <footer className="border-t border-brand-border pt-4 text-xs text-brand-muted">
-              Impact Start is an independent concept prototype created for a job application. It is not an official High Impact Professionals
+              Impact Career Compass is an independent concept prototype created for a job application. It is not an official High Impact Professionals
               product. Results come from your answers and a curated pathway library ({r.meta.libraryVersion}, {r.meta.engineVersion}). They are
               hypotheses to test, not predictions.
             </footer>
@@ -249,7 +304,7 @@ export function ImpactPassport() {
 
         <section className="no-print surface-card mt-8 p-6 sm:p-8">
           <h2 className="type-h2 text-brand-primary">A quick reflection</h2>
-          <p className="mt-1 text-brand-muted">Optional. Helps improve Impact Start; only your choice is recorded, never your answers.</p>
+          <p className="mt-1 text-brand-muted">Optional. Helps improve Impact Career Compass; only your choice is recorded, never your answers.</p>
           <div className="mt-5 grid gap-6 sm:grid-cols-2">
             {FEEDBACK.map((f) => (
               <fieldset key={f.key}>

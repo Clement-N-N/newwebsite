@@ -18,21 +18,60 @@ import { Button, LinkButton } from "../ui/Button";
 import { Chip } from "../ui/Chip";
 import { Dialog } from "../ui/Dialog";
 
+/** Impact Compass §21–24 (iteration): common reasons a person rejects a recommendation. */
 const REJECT_REASONS = [
   "I'm not interested in this problem",
-  "It doesn't fit my skills",
-  "It isn't feasible for me right now",
-  "I've already explored this",
+  "It misreads my experience",
+  "It doesn't work for me financially",
+  "I'm not eligible or there's a barrier",
+  "It doesn't fit my values",
+  "There isn't enough evidence for it",
+  "I'd rather make a difference another way",
 ];
 
 const COMPARE_ROWS: { label: string; get: (p: PathwayRec) => string; help: string }[] = [
-  { label: "Demonstrated skill fit", get: (p) => p.fit.skill, help: "How closely your stated experience matches what this work relies on." },
-  { label: "Feasibility right now", get: (p) => p.fit.feasibility, help: "Given the constraints you described." },
-  { label: "Motivation", get: (p) => p.fit.motivation, help: "Overlap with what you said drives you." },
+  { label: "Priority", get: (p) => p.fit.priority, help: "Explore now, worth investigating, longer-term, or not currently practical." },
+  { label: "Skill fit", get: (p) => p.fit.skill.label, help: "How closely your stated experience matches what this work relies on." },
+  { label: "Motivation", get: (p) => p.fit.motivation.label, help: "Overlap with what you said drives you." },
+  { label: "Feasibility right now", get: (p) => p.fit.feasibility.label, help: "Given the constraints you described." },
+  { label: "Evidence for the opportunity", get: (p) => p.fit.evidence, help: "How well-supported the opportunity itself is, from the library. Not your chance of success." },
   { label: "Learning required", get: (p) => p.fit.learning, help: "From the pathway library, not personalised." },
   { label: "Testing cheaply", get: (p) => p.fit.testability, help: "How easily you can try it this week." },
   { label: "Biggest unknown", get: (p) => p.uncertainties[0] ?? p.assumptions[0], help: "The first thing to check." },
 ];
+
+function ExperimentCard({ e, onDark = false }: { e: PathwayRec["experiment"]; onDark?: boolean }) {
+  const muted = onDark ? "text-brand-on-primary-muted" : "text-brand-muted";
+  const strong = onDark ? "text-brand-on-primary" : "text-brand-primary";
+  return (
+    <div>
+      <h3 className={`font-bold ${strong}`}>Low-cost experiment: {e.title}</h3>
+      <p className={`mt-2 ${muted}`}>
+        <span className={`font-semibold ${strong}`}>Hypothesis: </span>
+        {e.hypothesis}
+      </p>
+      <ol className={`mt-2 list-decimal space-y-1 pl-5 ${muted}`}>
+        {e.steps.map((s) => (
+          <li key={s}>{s}</li>
+        ))}
+      </ol>
+      <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-3">
+        <div>
+          <dt className={`font-semibold ${strong}`}>Effort</dt>
+          <dd className={muted}>{e.effort}</dd>
+        </div>
+        <div>
+          <dt className={`font-semibold ${strong}`}>What you&apos;ll learn</dt>
+          <dd className={muted}>{e.evidence}</dd>
+        </div>
+        <div>
+          <dt className={`font-semibold ${strong}`}>Decision rule</dt>
+          <dd className={muted}>{e.decisionRule}</dd>
+        </div>
+      </dl>
+    </div>
+  );
+}
 
 function PathwayDetail({ p }: { p: PathwayRec }) {
   const section = "mt-5";
@@ -41,7 +80,27 @@ function PathwayDetail({ p }: { p: PathwayRec }) {
       <div className="flex flex-wrap gap-2">
         <Chip tone="accent">{p.roleLabel}</Chip>
         <Chip>{p.cause ? CAUSE_LABELS[p.cause as keyof typeof CAUSE_LABELS] : "Useful across many causes"}</Chip>
+        <Chip tone="primary">{p.fit.priority}</Chip>
       </div>
+      <p className="mt-3 text-sm text-brand-muted">{p.fit.priorityReason}</p>
+      <dl className="mt-4 grid gap-3 rounded-xl bg-brand-surface p-4 text-sm sm:grid-cols-2">
+        {(
+          [
+            ["Skill fit", p.fit.skill],
+            ["Motivation", p.fit.motivation],
+            ["Feasibility now", p.fit.feasibility],
+          ] as const
+        ).map(([k, r]) => (
+          <div key={k}>
+            <dt className="text-brand-muted">{k}</dt>
+            <dd className="font-bold">{r.label}</dd>
+          </div>
+        ))}
+        <div>
+          <dt className="text-brand-muted">Evidence for the opportunity</dt>
+          <dd className="font-bold">{p.fit.evidence}</dd>
+        </div>
+      </dl>
       <section className={section}>
         <h3 className="font-bold text-brand-primary">The need</h3>
         <p className="text-brand-muted">{p.need}</p>
@@ -85,13 +144,22 @@ function PathwayDetail({ p }: { p: PathwayRec }) {
           </ul>
         </div>
       </section>
+      <section className={`${section} grid gap-5 sm:grid-cols-3`}>
+        <div>
+          <h3 className="font-bold text-brand-primary">Compared with what would happen anyway</h3>
+          <p className="text-brand-muted">{p.counterfactual}</p>
+        </div>
+        <div>
+          <h3 className="font-bold text-brand-primary">What it usually requires</h3>
+          <p className="text-brand-muted">{p.requirements}</p>
+        </div>
+        <div>
+          <h3 className="font-bold text-brand-primary">What would change this view</h3>
+          <p className="text-brand-muted">{p.reviseIf}</p>
+        </div>
+      </section>
       <section className={`${section} rounded-xl bg-brand-surface p-4`}>
-        <h3 className="font-bold text-brand-primary">Low-cost experiment: {p.experiment.title}</h3>
-        <ol className="mt-2 list-decimal space-y-1 pl-5">
-          {p.experiment.steps.map((s) => (
-            <li key={s}>{s}</li>
-          ))}
-        </ol>
+        <ExperimentCard e={p.experiment} />
       </section>
       <section className={section}>
         <h3 className="font-bold text-brand-primary">Background reading</h3>
@@ -162,7 +230,9 @@ export function PathwaysExplorer() {
       <ChapterIntro chapterId="pathways" />
       <div className="container-page">
         <p className="type-eyebrow text-brand-accent-text">Explore your pathways</p>
-        <h1 className="type-h1 mt-3 max-w-3xl text-brand-primary">Three hypotheses, side by side.</h1>
+        <h1 className="type-h1 mt-3 max-w-3xl text-brand-primary">
+          {shown.pathways.length === 1 ? "One hypothesis to test." : `${shown.pathways.length === 2 ? "Two" : "Three"} hypotheses, side by side.`}
+        </h1>
         <p className="type-lede mt-4 max-w-2xl text-brand-muted">
           None of these is a verdict. Compare them, save the ones worth keeping, and choose one to investigate this week.
         </p>
@@ -243,8 +313,9 @@ export function PathwaysExplorer() {
                 whileHover={{ y: -4 }}
                 className={`surface-card flex flex-col p-6 transition-[box-shadow] duration-150 hover:shadow-[var(--shadow-lifted)] ${isSelected ? "ring-2 ring-brand-accent" : ""}`}
               >
-                <div className="flex items-start justify-between gap-2">
+                <div className="flex flex-wrap items-start justify-between gap-2">
                   <Chip tone="accent">{p.roleLabel}</Chip>
+                  <Chip tone="primary">{p.fit.priority}</Chip>
                   {isSelected && <Chip tone="success">Investigating</Chip>}
                 </div>
                 <h2 className="type-card mt-4 text-brand-primary">{p.title}</h2>
@@ -255,15 +326,15 @@ export function PathwaysExplorer() {
                 <dl className="mt-5 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
                   <div>
                     <dt className="text-brand-muted">Skill fit</dt>
-                    <dd className="font-bold">{p.fit.skill}</dd>
+                    <dd className="font-bold">{p.fit.skill.short}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-brand-muted">Motivation</dt>
+                    <dd className="font-bold">{p.fit.motivation.short}</dd>
                   </div>
                   <div>
                     <dt className="text-brand-muted">Feasibility now</dt>
-                    <dd className="font-bold">{p.fit.feasibility}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-brand-muted">Learning</dt>
-                    <dd className="font-bold">{p.fit.learning}</dd>
+                    <dd className="font-bold">{p.fit.feasibility.short}</dd>
                   </div>
                   <div>
                     <dt className="text-brand-muted">To test</dt>
@@ -307,12 +378,9 @@ export function PathwaysExplorer() {
             <p className="type-eyebrow flex items-center gap-2 text-brand-accent-on-dark">
               <FlaskConical size={16} strokeWidth={2} absoluteStrokeWidth aria-hidden /> Your seven-day experiment
             </p>
-            <h2 className="type-h2 mt-2">{selected.experiment.title}</h2>
-            <ol className="mt-4 list-decimal space-y-1.5 pl-5 text-brand-on-primary-muted">
-              {selected.experiment.steps.map((s) => (
-                <li key={s}>{s}</li>
-              ))}
-            </ol>
+            <div className="mt-3">
+              <ExperimentCard e={selected.experiment} onDark />
+            </div>
             <div className="mt-6">
               <LinkButton href="/passport">Add it to your Impact Passport</LinkButton>
             </div>

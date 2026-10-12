@@ -1,4 +1,4 @@
-# Impact Start
+# Impact Career Compass
 
 **Discover what your experience could make possible.**
 
@@ -7,7 +7,8 @@ an **independent concept prototype** created for the Program Launch Lead / Direc
 High Impact Professionals (HIP), not an official HIP product.
 
 * **Product walkthrough:** [docs/WALKTHROUGH.md](docs/WALKTHROUGH.md)
-* **Brand audit (incomplete, with temporary tokens):** [docs/BRAND_AUDIT.md](docs/BRAND_AUDIT.md)
+* **Brand audit (values sampled from HIP's site):** [docs/BRAND_AUDIT.md](docs/BRAND_AUDIT.md)
+* **Impact Compass alignment:** [docs/IMPACT_COMPASS_ALIGNMENT.md](docs/IMPACT_COMPASS_ALIGNMENT.md)
 * **Design rationale:** [docs/DESIGN_RATIONALE.md](docs/DESIGN_RATIONALE.md)
 * **Limitations and assumptions:** [docs/LIMITATIONS.md](docs/LIMITATIONS.md)
 * **Test results:** [docs/TEST_RESULTS.md](docs/TEST_RESULTS.md)
@@ -36,7 +37,7 @@ No API key is needed. Optional environment variables (see `.env.example`):
 | `/discover` | Swipe Discovery |
 | `/crossroads` | Career Crossroads scenarios |
 | `/impact-map` | The Living Impact Map, with corrections |
-| `/reveal` | Seven-slide results reveal |
+| `/reveal` | Nine-slide results reveal, following the Impact Compass report structure |
 | `/pathways` | Pathway details, comparison, save, investigate, set aside |
 | `/passport` | Impact Passport (print to PDF, shareable summary, data controls) |
 | `/learn` | First learning lesson |
@@ -61,11 +62,11 @@ npm run test:e2e     # Playwright: journey, touch/mouse/keyboard, errors, reduce
 src/lib/assessment/   Question bank, vocabulary and labels (versioned)
 src/lib/knowledge/    Curated pathway library and source list (versioned)
 src/lib/engine/       Extraction, ranking, report building, Living Map graph, Zod schema, validator
-src/lib/ai/           Optional server-side AI wording layer and its prompt (versioned)
+src/lib/ai/           Optional server-side AI wording layer; system prompt is the Impact Compass instructions v1.0
 src/lib/state/        Session state; nothing persists unless the participant opts in
 src/lib/analytics.ts  Allow-listed, versioned product events (no answer content)
 src/components/       UI by stage: landing, discover, crossroads, map, report, pathways, passport, learn, dev
-src/app/globals.css   Design tokens (temporary brand values)
+src/app/globals.css   Design tokens (HIP values sampled from a screenshot; see docs/BRAND_AUDIT.md)
 e2e/                  Playwright tests
 ```
 

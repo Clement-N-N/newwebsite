@@ -6,10 +6,10 @@ type Size = "md" | "lg";
 
 // Press feedback: scale 0.96 over 150ms ease-out, never on disabled buttons (better-ui).
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-[var(--radius-button)] font-semibold transition-[background-color,color,box-shadow,scale] duration-150 ease-out enabled:active:scale-[0.96] [&:is(a)]:active:scale-[0.96] disabled:cursor-not-allowed disabled:opacity-50 min-h-11 text-center";
+  "inline-flex items-center justify-center gap-2 rounded-[var(--radius-button)] font-semibold transition-[background-color,color,box-shadow,scale,filter] duration-150 ease-out enabled:active:scale-[0.96] [&:is(a)]:active:scale-[0.96] disabled:cursor-not-allowed disabled:opacity-50 min-h-11 text-center";
 
 const variants: Record<Variant, string> = {
-  primary: "bg-brand-accent text-brand-primary hover:bg-brand-accent-hover shadow-soft",
+  primary: "bg-accent-gradient text-brand-primary-deep font-bold hover:brightness-105 shadow-soft",
   secondary: "bg-brand-primary text-brand-on-primary hover:bg-brand-primary-deep",
   ghost: "border border-brand-border-strong bg-brand-background text-brand-primary hover:bg-brand-primary-soft",
   onDark: "bg-brand-on-primary text-brand-primary hover:bg-brand-primary-soft",

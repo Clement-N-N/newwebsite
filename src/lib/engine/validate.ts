@@ -2,7 +2,7 @@ import { QUESTION_BY_ID } from "../assessment/questions";
 import type { Responses } from "../assessment/types";
 import { PATHWAY_BY_ID } from "../knowledge/pathways";
 import { isSourceId } from "../knowledge/sources";
-import { isAnswered } from "./extract";
+import { extractProfile, isAnswered } from "./extract";
 import { ReportSchema, type Claim, type EvidenceRef, type Report } from "./schema";
 
 export interface ValidationIssue {
@@ -82,7 +82,25 @@ export function validateReport(report: unknown, responses: Responses): Validatio
     });
     if (!p.assumptions.length) issues.push({ path, message: "No assumptions listed.", severity: "warning" });
   });
-  if (r.pathways.length < 3) issues.push({ path: "pathways", message: "Fewer than three pathways.", severity: "warning" });
+  // Impact Compass §8 and §11: options should be meaningfully different, and fewer than three is fine.
+  if (r.pathways.length < 3) issues.push({ path: "pathways", message: "Fewer than three credible pathways (allowed; not manufactured).", severity: "warning" });
+  const shapes = new Set<string>();
+  r.pathways.forEach((p) => {
+    const shape = `${p.role}|${p.mechanism}`;
+    if (shapes.has(shape)) issues.push({ path: `pathways ${p.id}`, message: "Two pathways share the same role and mechanism.", severity: "warning" });
+    shapes.add(shape);
+  });
+  const profile = extractProfile(responses);
+  const staying = profile.readiness.some((t) => t.key === "stay") && !profile.readiness.some((t) => t.key === "switch");
+  if (staying && !r.pathways.some((p) => p.role === "no-switch")) {
+    issues.push({ path: "pathways", message: "Participant prefers to stay in their role but no non-switching option is shown.", severity: "warning" });
+  }
+
+  checkText(r.story.headline, "story.headline", issues);
+  checkText(r.story.discovery, "story.discovery", issues);
+  r.tradeoffs.forEach((t, i) => checkText(t.text, `tradeoffs[${i}]`, issues));
+  checkText(r.reflectiveQuestion, "reflectiveQuestion", issues);
+  if (!r.reflectiveQuestion.trim().endsWith("?")) issues.push({ path: "reflectiveQuestion", message: "Reflective question is not a question.", severity: "error" });
 
   const nodeIds = new Set(r.map.nodes.map((n) => n.id));
   r.map.edges.forEach((e) => {

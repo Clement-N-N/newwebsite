@@ -1,25 +1,31 @@
 @import "tailwindcss";
 
 /*
- * Impact Start design tokens.
+ * Impact Career Compass design tokens.
  *
- * TEMPORARY VALUES: HIP's website could not be reached from the build environment, so these
- * colours and fonts are NOT verified HIP brand values. They follow the brief's observation
- * (deep blue, white, orange, strong sans-serif headings) and are tuned for WCAG AA contrast.
- * Replace them with audited values; see docs/BRAND_AUDIT.md. Components use only these tokens.
+ * Sampled from a screenshot of highimpactprofessionals.org supplied on 12 October 2026 (see
+ * docs/BRAND_AUDIT.md). Values are pixel samples, not an official style guide, so confirm them
+ * against HIP's CSS when available. Deliberate deviation: HIP's buttons use white text on
+ * orange (2.5:1); here they use deep navy text (5.2:1 or better) to meet WCAG AA.
+ * Components use only these tokens.
  */
 :root {
-  --brand-primary: #0b2a4a; /* deep blue (temporary) */
-  --brand-primary-deep: #071d34;
-  --brand-primary-soft: #e8eef5;
-  --brand-accent: #f28c28; /* orange (temporary); never as text on white */
-  --brand-accent-text: #a65200; /* orange tone for text on light surfaces, 5.5:1 */
-  --brand-accent-hover: #f59d45;
-  --brand-accent-on-dark: #ffb366; /* orange tone for text on deep blue, including glow-lit areas: 5.5:1 or better */
-  --brand-accent-soft: #fdebd8;
+  --brand-primary: #0c2d52; /* HIP hero blue, mid-gradient */
+  --brand-primary-deep: #111d32; /* HIP hero gradient, right edge */
+  --brand-primary-light: #09355d; /* HIP hero gradient, left edge */
+  --brand-primary-soft: #e7edf4;
+  --brand-gradient-hero: linear-gradient(100deg, #09355d 0%, #0c2d52 45%, #111d32 100%);
+  --brand-accent: #fb832c; /* HIP orange, button midpoint */
+  --brand-accent-gradient: linear-gradient(180deg, #fba12c 0%, #f75a22 100%); /* HIP button and tile band */
+  --brand-accent-gradient-hover: linear-gradient(180deg, #fcb04a 0%, #f86a34 100%);
+  --brand-accent-text: #b4470c; /* HIP orange darkened for text on white: 5.5:1 */
+  --brand-accent-hover: #fc9640;
+  --brand-accent-on-dark: #fba12c; /* HIP light orange for text on blue: 6.1:1 or better */
+  --brand-accent-soft: #fde8d7;
+  --brand-tile-grey: linear-gradient(180deg, #f5f0f4 0%, #c2c4c4 100%); /* HIP portrait tile background */
   --brand-background: #ffffff;
-  --brand-surface: #f4f6f9;
-  --brand-text: #0b1b2b;
+  --brand-surface: #f3f5f8;
+  --brand-text: #111d32;
   --brand-muted: #4a5a6b;
   --brand-on-primary: #ffffff;
   --brand-on-primary-muted: #c7d3e0;
@@ -31,8 +37,9 @@
   --brand-warning-soft: #fbf0dc;
   --brand-info: #2f6fa8;
 
-  --radius-card: 1.25rem;
-  --radius-button: 0.625rem;
+  /* HIP uses square tiles and near-square buttons. */
+  --radius-card: 0.375rem;
+  --radius-button: 0.125rem;
   /* Elevation: a 1px ring, lift, then ambient depth (better-ui shadow recipe, tinted to brand blue). */
   --shadow-border: 0 0 0 1px oklch(0.27 0.06 252 / 0.08), 0 1px 2px -1px oklch(0.27 0.06 252 / 0.08), 0 2px 4px 0 oklch(0.27 0.06 252 / 0.05);
   --shadow-border-hover: 0 0 0 1px oklch(0.27 0.06 252 / 0.12), 0 1px 2px -1px oklch(0.27 0.06 252 / 0.1), 0 2px 4px 0 oklch(0.27 0.06 252 / 0.07);
@@ -49,6 +56,7 @@
   --color-brand-primary: var(--brand-primary);
   --color-brand-primary-deep: var(--brand-primary-deep);
   --color-brand-primary-soft: var(--brand-primary-soft);
+  --color-brand-primary-light: var(--brand-primary-light);
   --color-brand-accent: var(--brand-accent);
   --color-brand-accent-text: var(--brand-accent-text);
   --color-brand-accent-hover: var(--brand-accent-hover);
@@ -86,7 +94,7 @@ body {
   background: var(--brand-background);
   color: var(--brand-text);
   font-family: var(--font-body), system-ui, sans-serif;
-  font-size: 1.0625rem;
+  font-size: 1.125rem;
   line-height: 1.6;
   overflow-x: clip;
 }
@@ -105,34 +113,34 @@ body {
 /* Typography scale */
 @utility type-display {
   font-family: var(--font-heading), system-ui, sans-serif;
-  font-weight: 800;
-  font-size: clamp(2.5rem, 1.2rem + 5.4vw, 5.75rem);
-  line-height: 1.02;
-  letter-spacing: -0.012em;
+  font-weight: 700;
+  font-size: clamp(2.375rem, 1.2rem + 4.8vw, 5.25rem);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
   text-wrap: balance;
 }
 @utility type-h1 {
   font-family: var(--font-heading), system-ui, sans-serif;
-  font-weight: 800;
-  font-size: clamp(2rem, 1.2rem + 3vw, 3.5rem);
-  line-height: 1.08;
-  letter-spacing: -0.018em;
+  font-weight: 700;
+  font-size: clamp(1.875rem, 1.2rem + 2.6vw, 3.25rem);
+  line-height: 1.14;
+  letter-spacing: -0.01em;
   text-wrap: balance;
 }
 @utility type-h2 {
   font-family: var(--font-heading), system-ui, sans-serif;
-  font-weight: 750;
-  font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.25rem);
-  line-height: 1.15;
-  letter-spacing: -0.012em;
+  font-weight: 700;
+  font-size: clamp(1.375rem, 1.05rem + 1.4vw, 2rem);
+  line-height: 1.2;
+  letter-spacing: -0.005em;
   text-wrap: balance;
 }
 @utility type-card {
   font-family: var(--font-heading), system-ui, sans-serif;
   font-weight: 700;
-  font-size: clamp(1.375rem, 1.05rem + 1.4vw, 2rem);
-  line-height: 1.2;
-  letter-spacing: -0.012em;
+  font-size: clamp(1.25rem, 1rem + 1.2vw, 1.75rem);
+  line-height: 1.25;
+  letter-spacing: -0.005em;
   text-wrap: balance;
 }
 @utility type-lede {
@@ -224,4 +232,15 @@ dialog::backdrop {
     color: inherit;
     text-decoration: underline;
   }
+}
+
+/* HIP's signature button: an orange gradient, near-square corners. */
+@utility bg-accent-gradient {
+  background-image: var(--brand-accent-gradient);
+}
+@utility bg-hero-gradient {
+  background-image: var(--brand-gradient-hero);
+}
+@utility bg-tile-grey {
+  background-image: var(--brand-tile-grey);
 }

@@ -11,7 +11,7 @@ import { CHAPTERS } from "@/lib/journey";
 import { useAssessment } from "@/lib/state/AssessmentProvider";
 import { Aurora } from "../fx/Aurora";
 import { WordReveal } from "../fx/WordReveal";
-import { MapMotif } from "./MapMotif";
+import { HeroTiles } from "./HeroTiles";
 import { ScrollStory } from "./ScrollStory";
 
 const OUTCOMES = [
@@ -50,19 +50,15 @@ export function LandingExperience() {
       <Aurora tone="primary" className="!fixed" />
 
       <section className="relative flex min-h-dvh items-center overflow-hidden">
-        <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[42%] opacity-80 lg:block" aria-hidden>
-          <div className="absolute inset-0 flex items-center pr-8">
-            <MapMotif />
-          </div>
-        </div>
-        <motion.div className="container-page pb-20 pt-28" initial="hidden" animate="visible" variants={stagger}>
+        <div className="container-page grid items-center gap-12 pb-20 pt-28 lg:grid-cols-[1.15fr_0.85fr]">
+        <motion.div initial="hidden" animate="visible" variants={stagger}>
           <motion.p variants={rise} className="type-eyebrow flex items-center gap-2 text-brand-accent-on-dark">
-            <Sparkles size={16} strokeWidth={2} absoluteStrokeWidth aria-hidden /> Impact Start
+            <Sparkles size={16} strokeWidth={2} absoluteStrokeWidth aria-hidden /> Impact Career Compass
           </motion.p>
           <WordReveal
             text="What could your experience make possible?"
             highlight={["possible?"]}
-            className="type-display mt-6 max-w-[13ch] lg:max-w-[11.5ch]"
+            className="type-display mt-6 max-w-[14ch]"
             delay={0.15}
           />
           <motion.p variants={rise} className="type-lede mt-8 max-w-xl text-brand-on-primary-muted" transition={{ delay: 0.7 }}>
@@ -94,6 +90,10 @@ export function LandingExperience() {
             ))}
           </motion.ul>
         </motion.div>
+        <div className="hidden lg:block">
+          <HeroTiles />
+        </div>
+        </div>
       </section>
 
       <ScrollStory />
@@ -155,13 +155,13 @@ export function LandingExperience() {
           <div className="rounded-[var(--radius-card)] bg-brand-primary-soft p-6 sm:p-8">
             <h2 className="text-xl font-bold text-brand-primary">What this is, and isn&apos;t</h2>
             <p className="mt-3 text-brand-muted">
-              Impact Start is a discovery tool, not a personality test. It won&apos;t tell you your purpose or score your potential. It
+              Impact Career Compass is a discovery tool, not a personality test. It won&apos;t tell you your purpose or score your potential. It
               reflects your answers back, suggests hypotheses worth testing, and shows its reasoning so you can disagree with it.
             </p>
             <h3 className="mt-6 font-bold text-brand-primary">Your answers</h3>
             <p className="mt-2 text-brand-muted">
               Your answers stay in this browser tab and disappear when you close it, unless you choose to remember them on this device. If
-              AI-assisted wording is switched on, your answers are sent to Anthropic&apos;s API to word your results. Impact Start does not
+              AI-assisted wording is switched on, your answers are sent to Anthropic&apos;s API to word your results. Impact Career Compass does not
               store them on a server.
             </p>
           </div>

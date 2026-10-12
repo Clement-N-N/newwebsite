@@ -1,62 +1,58 @@
 # HIP brand audit
 
-**Status: incomplete. All visual tokens in this prototype are temporary.**
+**Status: sampled from a screenshot of highimpactprofessionals.org supplied on 12 October 2026.**
+HIP's website could not be reached from the build environment, so values were measured from that
+screenshot (pixel sampling), not from HIP's CSS. They should be confirmed against HIP's style sources.
 
-## What was attempted
+## What the screenshot shows
 
-The brief asks for a token-level audit of these pages:
+* A navy hero with a left-to-right gradient, white headline type and a white "HIP" box logo with the
+  wordmark "HIGH IMPACT PROFESSIONALS".
+* Bold geometric sans-serif headings (Montserrat-like) and a humanist sans-serif body (Source Sans-like).
+* A rectangular orange gradient button ("Join the Waitlist") with white text and almost square corners.
+* Square portrait tiles: greyscale photos over a band that runs from orange into light grey.
+* Navigation: Impact Accelerator, Talent Directory, Job Board, Pledge Club, Resources, About.
 
-| Page | Result |
-| --- | --- |
-| https://www.highimpactprofessionals.org/ | Not reachable from the build environment (DNS lookup failed; HTTPS proxy returned 403) |
-| https://www.highimpactprofessionals.org/about-us | Not reachable |
-| https://www.highimpactprofessionals.org/impact-accelerator | Not reachable |
-| https://www.highimpactprofessionals.org/our-impact | Not reachable |
-| https://www.highimpactprofessionals.org/free-resources | Not reachable |
+## Tokens
 
-A web search for HIP brand guidelines returned nothing about this organisation. No CSS, rendered
-screenshots, logo files or fonts could be inspected, so **no value below is a verified HIP brand value.**
+All values live in `src/app/globals.css` (`:root`). No component uses a raw hex value.
 
-## What the prototype uses instead
-
-The brief observes that HIP's site uses **deep blue, white, orange, strong sans-serif headings, and
-portraits of real professionals**. The tokens follow that observation and were then tuned for WCAG AA
-contrast. They live in one place: `src/app/globals.css` (`:root`), mirrored for Motion in
-`src/lib/design/motion.ts`. No component uses a raw hex value.
-
-| Token | Temporary value | Notes |
+| Token | Value | Source |
 | --- | --- | --- |
-| `brand-primary` | `#0b2a4a` | Deep blue. White text on it: 14.5:1 |
-| `brand-accent` | `#f28c28` | Orange. Used for buttons and highlights, **never as text on white** (2.5:1) |
-| `brand-accent-text` | `#a65200` | Orange tone for text on light surfaces: 5.5:1 |
-| `brand-background` | `#ffffff` | |
-| `brand-surface` | `#f4f6f9` | Long-reflection chapters |
-| `brand-text` | `#0b1b2b` | |
-| `brand-muted` | `#4a5a6b` | 7.1:1 on white |
-| `brand-border` / `-strong` | `#d6dde5` / `#8296aa` | Strong variant meets 3:1 for control outlines |
-| `brand-success` / `brand-warning` | `#1f7a4d` / `#9a5b00` | Always paired with an icon or label |
-| `typography-heading` | Inter Tight 700–800 | Stand-in for HIP's heading face |
-| `typography-body` | Inter | Stand-in for HIP's body face |
-| `radius-card` / `radius-button` | 20px / 10px | |
-| `shadow-soft` | two-layer blue-tinted shadow | |
-| `motion-standard` / `motion-emphasis` | 240ms / 640ms, ease-out curves | |
+| `brand-gradient-hero` | `#09355d` → `#0c2d52` → `#111d32` | Sampled across the hero |
+| `brand-primary` | `#0c2d52` | Hero mid-point. White text: 13.9:1 |
+| `brand-primary-deep` | `#111d32` | Hero right edge; also body text |
+| `brand-accent-gradient` | `#fba12c` → `#f75a22` | Sampled top to bottom of the button |
+| `brand-accent` | `#fb832c` | Button mid-point |
+| `brand-accent-text` | `#b4470c` | HIP orange darkened for text on white: 5.5:1 |
+| `brand-accent-on-dark` | `#fba12c` | Light end of the button gradient, for text on navy: 6.8:1 |
+| `brand-tile-grey` | `#f5f0f4` → `#c2c4c4` | Portrait tile background |
+| `brand-surface` | `#f3f5f8` | Light chapters (not sampled; neutral) |
+| `typography-heading` | Montserrat 600–800 | Visual match; not confirmed |
+| `typography-body` | Source Sans 3 | Visual match; not confirmed |
+| `radius-card` / `radius-button` | 6px / 2px | HIP uses square tiles and near-square buttons |
 
-Orange on deep blue (and deep blue on orange) is 5.9:1.
+## Deliberate deviation
+
+HIP's button uses **white text on orange**, which measures about 2.5:1 and fails WCAG AA for normal
+text. The prototype keeps HIP's orange gradient but uses navy text (`#111d32`: 5.2:1 at the darkest end of the gradient, 8.2:1 at the lightest). This is the
+only intentional departure from what the screenshot shows.
 
 ## Logo
 
-No logo file was available, and none was redrawn. The header shows a dashed **"HIP logo placeholder"**
-(`src/components/LogoPlaceholder.tsx`). Every page states that Impact Start is an independent concept,
-not an official HIP product.
+`public/brand/hip-logo-screenshot.png` is cropped from the supplied screenshot and shown small, after
+"Concept for", in the header. It is low resolution and should be replaced with HIP's official SVG and
+usage guidance. Impact Career Compass has its own compass mark, so the product is never presented as
+HIP's own. Every page states that it is an independent concept, not an official HIP product.
 
 ## Imagery
 
-No licensed photography was available. The experience is deliberately typography-led, and the only
-graphic motif is the Impact Map's own node-and-line language. HIP's real portraits could be added to the
-landing page once licensed.
+No licensed photography is used. The landing page echoes HIP's portrait tiles with six capability
+tiles (Operations, Finance, Engineering, Research, People, Communications) in the same orange-to-grey
+treatment, using icons instead of faces. Real portraits could replace them once licensed.
 
-## To complete the audit
+## To finish the audit
 
-Please provide any of: screenshots of the five pages above, the site's CSS (or Webflow/Figma style
-export), the logo in SVG with usage guidance, and the font names. Swapping values in `:root` and the two
-`next/font` imports in `src/app/layout.tsx` re-themes the whole product.
+Confirm the hex values and font names against HIP's CSS or design files, and supply the logo as SVG.
+Changing `:root` in `globals.css` and the two `next/font` imports in `src/app/layout.tsx` re-themes the
+whole product.

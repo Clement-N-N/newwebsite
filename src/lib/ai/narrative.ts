@@ -11,6 +11,8 @@ import { NARRATIVE_SYSTEM_PROMPT, PROMPT_VERSION } from "./prompt";
 export const NARRATIVE_MODEL = "claude-opus-5-5";
 
 const NarrativeSchema = z.object({
+  discovery: z.string(),
+  reflectiveQuestion: z.string(),
   story: z.array(z.object({ index: z.number().int(), text: z.string() })),
   strengths: z.array(z.object({ id: z.string(), description: z.string() })),
   pathways: z.array(z.object({ id: z.string(), why: z.string() })),
@@ -51,6 +53,8 @@ export async function applyNarrative(report: Report, responses: Responses): Prom
   if (!process.env.ANTHROPIC_API_KEY) return { report, ai: { status: "not-configured" } };
 
   const draft = {
+    discovery: report.story.discovery,
+    reflectiveQuestion: report.reflectiveQuestion,
     story: report.story.paragraphs.map((p, index) => ({ index, text: p.text })),
     strengths: report.strengths.map((s) => ({ id: s.id, description: s.description })),
     pathways: report.pathways.map((p) => ({ id: p.id, title: p.title, why: p.why.text })),
@@ -76,6 +80,8 @@ export async function applyNarrative(report: Report, responses: Responses): Prom
     if (!out) return { report, ai: { status: "failed", reason: "The response did not match the expected format." } };
 
     const next: Report = structuredClone(report);
+    if (out.discovery.trim()) next.story.discovery = out.discovery.trim();
+    if (out.reflectiveQuestion.trim().endsWith("?")) next.reflectiveQuestion = out.reflectiveQuestion.trim();
     for (const s of out.story) if (next.story.paragraphs[s.index] && s.index < 2) next.story.paragraphs[s.index].text = s.text;
     for (const s of out.strengths) {
       const target = next.strengths.find((x) => x.id === s.id);

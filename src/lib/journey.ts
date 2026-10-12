@@ -1,5 +1,5 @@
 /**
- * The seven chapters of Impact Start. Each one teaches a single idea, so the assessment
+ * The seven chapters of Impact Career Compass. Each one teaches a single idea, so the assessment
  * doubles as the first part of a learning journey.
  */
 export interface Chapter {

@@ -100,12 +100,51 @@ describe("buildReport", () => {
     expect(() => buildReport(partial)).toThrow(IncompleteAssessmentError);
   });
 
-  it("never shows numeric scores or percentages to participants", () => {
+  it("never shows percentages, and every 0–3 rating carries a plain-language label", () => {
     for (const p of SAMPLE_PROFILES) {
-      const text = JSON.stringify(buildReport(p.responses, { now: new Date(0) }).pathways);
-      expect(text).not.toMatch(/\d+\s?%/);
-      expect(text).not.toMatch(/"score"/);
+      const report = buildReport(p.responses, { now: new Date(0) });
+      expect(JSON.stringify(report)).not.toMatch(/\d+\s?%/);
+      for (const rec of report.pathways) {
+        for (const r of [rec.fit.skill, rec.fit.motivation, rec.fit.feasibility]) {
+          expect(r.label).not.toMatch(/\d/);
+          expect(r.short).not.toMatch(/\d/);
+        }
+      }
     }
+  });
+
+  it("follows the Impact Compass report structure", () => {
+    for (const p of SAMPLE_PROFILES) {
+      const r = buildReport(p.responses);
+      expect(r.story.discovery.length).toBeGreaterThan(0);
+      expect(r.strengths.every((s) => s.transfer && s.evidenceType)).toBe(true);
+      expect(r.unknowns.length).toBeGreaterThanOrEqual(1);
+      expect(r.unknowns.length).toBeLessThanOrEqual(3);
+      expect(r.reflectiveQuestion.trim().endsWith("?")).toBe(true);
+      for (const rec of r.pathways) {
+        expect(rec.experiment.hypothesis && rec.experiment.decisionRule && rec.experiment.effort).toBeTruthy();
+        expect(rec.counterfactual && rec.requirements && rec.reviseIf).toBeTruthy();
+      }
+    }
+  });
+
+  it("personalises the headline from demonstrated capabilities", () => {
+    expect(buildReport(amara).story.headline).toMatch(/^Your operations .*experience may travel further than you think\.$/);
+  });
+
+  it("gives a weekly plan when time is the constraint, and a daily plan otherwise", () => {
+    const timeBound: Responses = { ...amara, "x-time": { type: "scenario", values: ["advising"] } };
+    const free: Responses = { ...amara, "x-time": { type: "scenario", values: ["project"] } };
+    expect(buildReport(timeBound).plan.mode).toBe("weekly");
+    const daily = buildReport(free).plan;
+    expect(daily.mode).toBe("daily");
+    expect(daily.steps.map((s) => s.when)).toEqual(["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6", "Day 7"]);
+  });
+
+  it("does not recommend a career switch first to someone staying in their role", () => {
+    const r = buildReport(priya);
+    expect(r.pathways.some((p) => p.role === "no-switch")).toBe(true);
+    expect(r.pathways.filter((p) => p.role === "stretch").every((p) => p.fit.priority !== "Explore now")).toBe(true);
   });
 });
 

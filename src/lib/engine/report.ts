@@ -33,6 +33,19 @@ const CAPABILITY_MEANING: Record<Capability, string> = {
   policy: "Understanding how institutions, rules and decisions work.",
 };
 
+/** Impact Compass §16.2: why each capability might be useful in a different context. */
+const CAPABILITY_TRANSFER: Record<Capability, string> = {
+  operations: "Effective organisations are often limited by delivery and systems, not ideas. Reliable operations can let a small team do far more of its core work.",
+  leadership: "Growing organisations need people who can set direction and hold teams together through change.",
+  research: "Choosing where effort goes depends on judging evidence well, in research teams, funders and evaluators alike.",
+  technology: "Many effective organisations have few engineers, so technical skill can multiply a small team's output.",
+  finance: "Judging cost, risk and trade-offs is central to deciding which work gets funded.",
+  communication: "Clear explanation brings funding, talent and support to work that is otherwise easy to overlook.",
+  people: "Hiring and keeping good people is a frequent bottleneck for growing nonprofits.",
+  entrepreneurship: "Some promising interventions have no organisation delivering them yet; someone has to build one.",
+  policy: "Many problems are shaped by rules and institutions, so understanding how decisions get made can be a lever.",
+};
+
 const ref = (e: Evidence): EvidenceRef => ({ questionId: e.questionId, quote: e.quote });
 const refs = (t: Theme) => t.evidence.map(ref);
 
@@ -79,7 +92,14 @@ function buildStory(profile: Profile): Report["story"] {
     });
   }
 
-  return { headline: "Your career has equipped you with more than a job title.", paragraphs };
+  const [a, b] = profile.capabilities.slice(0, 2).map((t) => t.label.toLowerCase());
+  const headline = a
+    ? `Your ${b ? `${a} and ${b}` : a} experience may travel further than you think.`
+    : "Your career has equipped you with more than a job title.";
+  const discovery = a
+    ? `Your answers show the clearest evidence for ${b ? `${a} and ${b}` : a}. Below are the strengths behind that, the possibilities that look most worth testing, and one small experiment for this week. Everything here is a hypothesis you can check, not a conclusion.`
+    : "Below is what your answers suggest so far. Everything here is a hypothesis you can check, not a conclusion.";
+  return { headline, discovery, paragraphs };
 }
 
 function buildStrengths(profile: Profile): Insight[] {
@@ -87,6 +107,9 @@ function buildStrengths(profile: Profile): Insight[] {
     id: t.id,
     label: t.label,
     description: `${CAPABILITY_MEANING[t.key]} You told us ${joinList(bestEvidence([t], 1).concat(t.evidence.filter((e) => e !== bestEvidence([t], 1)[0])).slice(0, 2).map((e) => e.quote))}.`,
+    transfer: CAPABILITY_TRANSFER[t.key],
+    // A behaviour statement is explicit evidence; inferring a skill from a field of work is not.
+    evidenceType: t.evidence.some((e) => e.basis === "demonstrated" && e.questionId !== "background") ? "Explicit evidence" : "Reasonable inference",
     confidence: t.confidence,
     basis: t.basis,
     evidence: refs(t),
@@ -187,7 +210,7 @@ function buildUncertainties(c: Candidate, profile: Profile): string[] {
   if (has(profile.constraints, "time") && !c.pathway.lowCommitment) {
     out.push("Whether you can make room for this alongside your current responsibilities.");
   }
-  if (c.fit.skill === "Developing") out.push("How much new learning you'd need before you could contribute.");
+  if (c.fit.skill.score <= 1) out.push("How much new learning you'd need before you could contribute.");
   if (c.pathway.cause && !c.matchedCause && profile.causes.length) {
     out.push(`You didn't choose ${CAUSE_LABELS[c.pathway.cause].toLowerCase()}, so check whether it holds your interest.`);
   }
@@ -213,6 +236,9 @@ function toRec(role: Role, c: Candidate, profile: Profile, used: Set<string>): P
     assumptions: p.assumptions,
     uncertainties: buildUncertainties(c, profile),
     constraints: p.constraints,
+    counterfactual: p.counterfactual,
+    requirements: p.requirements,
+    reviseIf: p.reviseIf,
     experiment: { pathwayId: p.id, ...p.experiment },
     sources: p.sources,
     resources: p.resources,
@@ -263,14 +289,117 @@ function buildUnknowns(profile: Profile, recs: PathwayRec[]): Claim[] {
   }
   const first = recs[0];
   if (first) {
-    out.push({
+    // The assumption behind the leading pathway could change the recommendation most, so it goes second.
+    out.splice(Math.min(1, out.length), 0, {
       text: `For “${first.title}”, the biggest assumption to check is: ${first.assumptions[0].charAt(0).toLowerCase()}${first.assumptions[0].slice(1)}`,
       evidence: first.why.evidence,
       sources: first.sources,
     });
   }
+  // Impact Compass §16.6: two or three unknowns, the ones most likely to change the decision.
+  return out.slice(0, 3);
+}
+
+/** §16.5: how the pathways differ, without pretending to know which will matter most. */
+function buildTradeoffs(recs: PathwayRec[], profile: Profile): Report["tradeoffs"] {
+  if (recs.length < 2) return [];
+  const by = <T,>(f: (p: PathwayRec) => T) => recs.map((p) => ({ p, v: f(p) }));
+  const name = (p: PathwayRec) => `“${p.title}”`;
+  const out: Report["tradeoffs"] = [];
+
+  const fit = by((p) => p.fit.skill.score).sort((x, y) => y.v - x.v);
+  out.push({
+    dimension: "Personal fit",
+    text:
+      fit[0].v > fit[fit.length - 1].v
+        ? `${name(fit[0].p)} draws most directly on what you've done. ${name(fit[fit.length - 1].p)} relies more on skills you didn't highlight.`
+        : "Your experience is similarly relevant to each of these, so interest and feasibility may decide between them.",
+  });
+
+  const learning = recs.filter((p) => p.fit.learning === "High");
+  out.push({
+    dimension: "Time and effort",
+    text: learning.length
+      ? `${joinList(learning.map(name))} would take the most new learning. The others could be explored with less preparation.`
+      : "None of these needs extensive retraining to start exploring.",
+  });
+
+  const stay = recs.filter((p) => p.role === "no-switch");
+  const move = recs.filter((p) => p.role !== "no-switch");
+  const financial = profile.constraints.some((t) => t.key === "financial");
+  out.push({
+    dimension: "Financial sustainability and risk",
+    text:
+      stay.length && move.length
+        ? `${joinList(stay.map(name))} keeps your current income and job. ${joinList(move.map(name))} would likely mean a move, where pay${
+            financial ? ", which you told us matters," : ""
+          } varies and is worth checking early.`
+        : stay.length
+          ? "All of these work alongside your current job, so the financial risk is low; the trade-off is that your time is limited."
+          : `Each of these would likely mean a move${financial ? ", so check pay early, as you told us it matters" : ""}.`,
+  });
+
+  const stretch = recs.find((p) => p.role === "stretch");
+  out.push({
+    dimension: "Learning and career capital",
+    text: stretch
+      ? `${name(stretch)} would build the most new career capital, at the cost of more uncertainty. The others deepen what you already have and keep options open.`
+      : "These options mainly deepen and redeploy what you already have, which keeps future options open.",
+  });
   return out;
 }
+
+/** §14: seven days by default; one weekly action when time is tight. */
+/** Exported so the UI can rebuild the plan when the participant picks a different experiment. */
+export function buildPlan(experiment: Report["experiment"], chosenTitle: string | undefined, weekly: boolean): Report["plan"] {
+  const title = chosenTitle ? `“${chosenTitle}”` : "your chosen pathway";
+  if (weekly) {
+    return {
+      mode: "weekly",
+      steps: [
+        { when: "This week", task: `${experiment.title}: ${experiment.steps[0]}` },
+        { when: "When you have time", task: experiment.steps.slice(1).join(" ") || "Write down what you learned." },
+        { when: "End of the week", task: `Decide. ${experiment.decisionRule}` },
+      ],
+    };
+  }
+  return {
+    mode: "daily",
+    steps: [
+      { when: "Day 1", task: `Review your results and confirm you want to test ${title}.` },
+      { when: "Day 2", task: experiment.steps[0] },
+      { when: "Day 3", task: experiment.steps[1] ?? "Identify a person, organisation or resource to learn from." },
+      { when: "Day 4", task: experiment.steps[2] ?? "Start a conversation or a small exploratory task." },
+      { when: "Day 5", task: `Write down what you found. Look for: ${experiment.evidence.charAt(0).toLowerCase()}${experiment.evidence.slice(1)}` },
+      { when: "Day 6", task: "Reflect on fit, feasibility and how this work would actually make a difference." },
+      { when: "Day 7", task: `Decide whether to continue, revise or try another pathway. ${experiment.decisionRule}` },
+    ],
+  };
+}
+
+/** §16.9: one question specific to this profile and its next decision. */
+function buildReflectiveQuestion(profile: Profile, recs: PathwayRec[]): string {
+  const has = (themes: Theme[], key: string) => themes.some((t) => t.key === key);
+  const stretch = recs.find((p) => p.role === "stretch");
+  const first = recs[0];
+  if (has(profile.readiness, "stay") && !has(profile.readiness, "switch")) {
+    return "If you stayed in your current role for the next two years, what is one decision at work you could influence that matters for a problem you care about?";
+  }
+  if (has(profile.constraints, "financial") && stretch) {
+    return `What income would you need for a move like “${stretch.title}” to feel safe, and what is the quickest way to find out what such roles actually pay?`;
+  }
+  if (!profile.causes.length) {
+    return "Which problem in the world would you be most disappointed never to have worked on, and why that one?";
+  }
+  if (profile.unsure.length) {
+    return `You weren't sure whether “${profile.unsure[0].statement}” What would you need to see in yourself to answer that with confidence?`;
+  }
+  return first
+    ? `What result from your experiment on “${first.title}” would genuinely change your mind about it?`
+    : "What would you need to learn this week to feel confident about your next step?";
+}
+
+const has = (themes: Theme[], key: string) => themes.some((t) => t.key === key);
 
 export function buildReport(responses: Responses, options: ReportOptions = {}): Report {
   const profile = extractProfile(responses, options.rejectedThemes ?? []);
@@ -280,7 +409,7 @@ export function buildReport(responses: Responses, options: ReportOptions = {}): 
   const used = new Set<string>();
   const pathways = selected.map(({ role, candidate }) => toRec(role, candidate, profile, used));
   const chosen = pathways.find((p) => p.id === options.selectedPathwayId) ?? pathways[0];
-  const experiment = chosen ? chosen.experiment : { pathwayId: "", title: "", steps: [] };
+  const experiment = chosen.experiment;
 
   const map = buildMap(
     profile,
@@ -313,8 +442,19 @@ export function buildReport(responses: Responses, options: ReportOptions = {}): 
     constraints: profile.constraints.map((t) => insight(t, capitalise(`${t.evidence[0].quote}.`))),
     map,
     pathways,
+    tradeoffs: buildTradeoffs(pathways, profile),
     unknowns: buildUnknowns(profile, pathways),
     experiment,
+    plan: buildPlan(experiment, chosen?.title, profile.constraints.some((t) => t.key === "time")),
+    learning: {
+      lesson: "Lesson 1 · Judging whether a career path is high-impact",
+      why: profile.causes.length
+        ? "It shows how people compare problems and test pathways, so you can judge these hypotheses for yourself."
+        : "You haven't chosen a problem yet, and this lesson shows how people compare problems before choosing.",
+      href: "/learn",
+      followOn: has(profile.readiness, "switch") && !has(profile.readiness, "stay") ? "hip-iap" : "hip-resources",
+    },
+    reflectiveQuestion: buildReflectiveQuestion(profile, pathways),
     nextSteps: [
       {
         title: "Explore HIP's free resources",
@@ -323,7 +463,7 @@ export function buildReport(responses: Responses, options: ReportOptions = {}): 
       },
       {
         title: "Learn about the Impact Accelerator Program",
-        description: "A structured programme for professionals planning their next steps. Completing Impact Start does not enrol you.",
+        description: "A structured programme for professionals planning their next steps. Completing Impact Career Compass does not enrol you.",
         sourceId: "hip-iap",
       },
       {

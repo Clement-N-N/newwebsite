@@ -2,18 +2,46 @@ import type { Capability, Cause, Motivation } from "../assessment/types";
 import { PATHWAYS, type ChangeLevel, type Pathway } from "../knowledge/pathways";
 import { scoreOf, type Profile, type Theme } from "./extract";
 
-export const ENGINE_VERSION = "engine-2026.10.1";
+export const ENGINE_VERSION = "engine-2026.10.2";
 
-export type SkillFit = "Strong" | "Moderate" | "Developing";
-export type Feasibility = "Higher" | "Medium" | "Lower";
-export type MotivationFit = "Strong" | "Some" | "Unclear";
+/** Anchored 0–3 scales from the Impact Compass instructions (section 9). Never aggregated into a score. */
+export interface Rating {
+  score: 0 | 1 | 2 | 3;
+  short: string;
+  label: string;
+}
+const scale = (rows: [string, string][]) => (n: 0 | 1 | 2 | 3): Rating => ({ score: n, short: rows[n][0], label: rows[n][1] });
+export const SKILL_SCALE = scale([
+  ["None", "No relevant evidence"],
+  ["Limited", "Limited or indirect evidence"],
+  ["Some", "Some demonstrated transferable experience"],
+  ["Substantial", "Substantial directly relevant experience"],
+]);
+export const MOTIVATION_SCALE = scale([
+  ["Low", "Little or no interest expressed"],
+  ["Mild", "Mild or uncertain interest"],
+  ["Clear", "Clear interest with some supporting behaviour"],
+  ["Strong", "Strong interest supported by what you've done"],
+]);
+export const FEASIBILITY_SCALE = scale([
+  ["Conflicts", "Conflicts with a constraint you stated"],
+  ["Barriers", "Significant unresolved barriers"],
+  ["Plausible", "Plausible with further investigation"],
+  ["Feasible", "Feasible on what you've told us"],
+]);
+
+export type Priority = "Explore now" | "Worth investigating" | "Longer-term possibility" | "Not currently practical";
 
 export interface Fit {
-  skill: SkillFit;
-  feasibility: Feasibility;
-  motivation: MotivationFit;
+  skill: Rating;
+  motivation: Rating;
+  feasibility: Rating;
+  /** Strength of evidence for the opportunity itself, from the library. Not a probability of success. */
+  evidence: Pathway["evidence"];
   learning: Pathway["learning"];
   testability: "Easy to test" | "Takes more set-up";
+  priority: Priority;
+  priorityReason: string;
 }
 
 export interface Candidate {
@@ -90,13 +118,7 @@ export function scorePathway(pathway: Pathway, profile: Profile): Candidate {
   const w = WEIGHTS[pathway.change];
   const score = w.skill * skill + w.motivation * motivation + w.cause * cause + w.mode * mode + w.feasibility * feasibility;
 
-  const fit: Fit = {
-    skill: skill >= 0.7 ? "Strong" : skill >= 0.4 ? "Moderate" : "Developing",
-    feasibility: feasibility >= 0.85 ? "Higher" : feasibility >= 0.6 ? "Medium" : "Lower",
-    motivation: motivation >= 0.6 ? "Strong" : motivation >= 0.25 ? "Some" : "Unclear",
-    learning: pathway.learning,
-    testability: pathway.change === "stretch" ? "Takes more set-up" : "Easy to test",
-  };
+  const fit = rate(pathway, profile, { skill, matchedCapabilities, matchedMotivations, matchedCause, maxMode });
 
   return {
     pathway,
@@ -106,6 +128,71 @@ export function scorePathway(pathway: Pathway, profile: Profile): Candidate {
     matchedCapabilities,
     matchedMotivations,
     matchedCause,
+  };
+}
+
+function rate(
+  pathway: Pathway,
+  profile: Profile,
+  m: {
+    skill: number;
+    matchedCapabilities: Theme<Capability>[];
+    matchedMotivations: Theme<Motivation>[];
+    matchedCause?: Theme<Cause>;
+    maxMode: number;
+  },
+): Fit {
+  const has = (themes: Theme[], key: string) => themes.some((t) => t.key === key);
+
+  // Skill fit: demonstrated evidence for the capabilities this work depends on most.
+  const primaryMatched = m.matchedCapabilities.some((t) => t.key === pathway.capabilities[0]);
+  const demonstrated = m.matchedCapabilities.some((t) => t.basis !== "stated");
+  const skill: 0 | 1 | 2 | 3 = m.matchedCapabilities.length === 0 ? 0 : m.skill >= 0.6 && primaryMatched && demonstrated ? 3 : m.skill >= 0.35 ? 2 : 1;
+
+  // Motivation: stated interest in the problem or the kind of work, and whether behaviour backs it.
+  const choseOtherCauses = Boolean(pathway.cause) && profile.causes.length > 0 && !m.matchedCause;
+  const modeShare = scoreOf(profile.modes, pathway.mode) / m.maxMode;
+  const interest =
+    clamp(m.matchedMotivations.reduce((sum, t) => sum + t.score, 0) / 4) + (m.matchedCause ? 0.3 : 0) + (modeShare >= 0.6 ? 0.2 : 0);
+  const backedByBehaviour = m.matchedMotivations.some((t) => t.basis === "both");
+  const motivation: 0 | 1 | 2 | 3 =
+    choseOtherCauses && m.matchedMotivations.length === 0 ? 0 : interest >= 0.8 && backedByBehaviour ? 3 : interest >= 0.4 ? 2 : 1;
+
+  // Feasibility: only constraints the participant chose to tell us about.
+  const switching = pathway.change !== "no-switch";
+  let feasibility = 3 as 0 | 1 | 2 | 3;
+  const lower = (n: 0 | 1 | 2 | 3) => {
+    if (n < feasibility) feasibility = n;
+  };
+  if (has(profile.readiness, "stay") && !has(profile.readiness, "switch") && switching) lower(pathway.change === "stretch" ? 0 : 1);
+  if (has(profile.constraints, "financial") && switching) lower(pathway.change === "stretch" ? 1 : 2);
+  if (has(profile.constraints, "time") && !pathway.lowCommitment) lower(1);
+
+  let priority: Priority;
+  let priorityReason: string;
+  if (feasibility === 0) {
+    priority = "Not currently practical";
+    priorityReason = "It would mean changing careers, and you told us you're not looking to right now.";
+  } else if (pathway.change === "stretch" && (skill <= 1 || has(profile.readiness, "long-horizon"))) {
+    priority = "Longer-term possibility";
+    priorityReason = skill <= 1 ? "It would need skills you didn't highlight, so it's one to build towards." : "It fits the longer transition you described.";
+  } else if (feasibility >= 2 && skill >= 2) {
+    priority = "Explore now";
+    priorityReason = "You have relevant experience and nothing you told us rules it out.";
+  } else {
+    priority = "Worth investigating";
+    priorityReason = feasibility <= 1 ? "Promising, but a constraint you mentioned needs working through first." : "Promising, but the evidence of fit is still thin.";
+  }
+
+  return {
+    skill: SKILL_SCALE(skill),
+    motivation: MOTIVATION_SCALE(motivation),
+    feasibility: FEASIBILITY_SCALE(feasibility),
+    evidence: pathway.evidence,
+    learning: pathway.learning,
+    testability: pathway.change === "stretch" ? "Takes more set-up" : "Easy to test",
+    priority,
+    priorityReason,
   };
 }
 
@@ -121,7 +208,10 @@ export function rankPathways(profile: Profile, excluded: string[] = []): Candida
  * no-switch option instead of a stretch.
  */
 export function selectPathways(profile: Profile, excluded: string[] = []): { role: Role; candidate: Candidate }[] {
-  const ranked = rankPathways(profile, excluded);
+  // Never manufacture three options: drop candidates with no relevant skill and little interest.
+  const all = rankPathways(profile, excluded);
+  const credible = all.filter((c) => !(c.fit.skill.score === 0 && c.fit.motivation.score <= 1));
+  const ranked = credible.length ? credible : all.slice(0, 1);
   const notSwitching = profile.readiness.some((t) => t.key === "stay") && !profile.readiness.some((t) => t.key === "switch");
   const slots: Role[] = notSwitching ? ["no-switch", "adjacent", "no-switch"] : ["adjacent", "stretch", "no-switch"];
 

@@ -24,7 +24,9 @@ test.describe("accessibility (axe, WCAG 2.2 AA)", () => {
     await axe(page);
     await page.getByRole("button", { name: /Operations, programmes/ }).click();
     await page.getByRole("button", { name: "Continue" }).click();
-    await page.waitForTimeout(800);
+    // Check the "new on your map" toast once its entrance has settled, not mid-fade.
+    await expect(page.getByText(/New on your map/)).toHaveCSS("opacity", "1");
+    await page.waitForTimeout(300);
     await axe(page);
     await page.goto("/crossroads");
     await beginChapter(page, 2);
